@@ -1,0 +1,30 @@
+.spinWrapper, .formWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 560px;
+}
+
+.loginForm {
+  max-width: 600px;
+  width: 100%;
+
+  .formIcon {
+    font-size: 42px;
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .submitButton {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    box-shadow: 0 0 0 30px black inset !important;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.85);
+  }
+}

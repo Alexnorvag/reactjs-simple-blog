@@ -1,0 +1,31 @@
+.skeleton {
+  margin-top: 60px;
+  margin-bottom: 60px;
+}
+
+.projectsFilters {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+
+  > * {
+    margin: auto;
+  }
+
+  .searchPost > * {
+    width: 100% !important;
+  }
+
+  @media (max-width: 750px) {
+    display: block;
+
+    > * {
+      width: 100%;
+      text-align: center;
+
+      &:not(:first-child) {
+        margin-top: 10px;
+      }
+    }
+  }
+}

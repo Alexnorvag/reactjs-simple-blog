@@ -1,0 +1,12 @@
+.justifiedItems {
+  display: flex;
+  justify-content: space-between;
+}
+
+.userActions:extend(.justifiedItems) {}
+
+.usersFilters {
+  &:extend(.justifiedItems);
+
+  margin-top: 16px;
+}

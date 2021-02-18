@@ -7,3 +7,23 @@ export const loadingStatuses = {
 } as const;
 
 export type LoadingStatuses = typeof loadingStatuses[keyof typeof loadingStatuses];
+
+export const statusesToThunkMapping: { [key in LoadingStatuses]: string } = {
+  [loadingStatuses.succeeded]: 'fulfilled',
+  [loadingStatuses.pending]: 'pending',
+  [loadingStatuses.failed]: 'rejected',
+};
+
+const paginationDefaultSearchParams = {
+  pageNumber: 1,
+};
+
+export const postsDefaultSearchParams = {
+  ...paginationDefaultSearchParams,
+  pageSize: 3,
+};
+
+export const usersDefaultSearchParams = {
+  ...paginationDefaultSearchParams,
+  pageSize: 5,
+};
