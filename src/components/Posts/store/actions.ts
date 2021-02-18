@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { message } from 'antd';
+import { NewPostData } from './index';
 import { getAccessToken } from '../../../utils/localStorageUtils';
 import { buildQueryString } from '../../../utils/queryStringUtils';
 import { apiUrl, postsDefaultSearchParams } from '../../../constants/api';
-import { NewPostData } from './index';
 import history from '../../../constants/history';
 
 export const createPost = createAsyncThunk(

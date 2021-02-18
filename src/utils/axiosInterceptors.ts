@@ -39,7 +39,7 @@ export default () => {
 
         return axios.request(retryConfig);
       } catch (e) {
-        store.dispatch(actions.signOut());
+        store.dispatch(actions.resetAuth());
       }
     }
 

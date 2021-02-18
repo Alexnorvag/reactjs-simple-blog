@@ -3,11 +3,12 @@ import { Button } from 'antd';
 import { useDispatch } from 'react-redux';
 import { actions } from '../store';
 
-export default () => {
+const SignOut = ({ loading }: { loading?: boolean }) => {
   const dispatch = useDispatch();
 
   return (
     <Button
+      loading={loading}
       type="primary"
       onClick={() => dispatch(actions.signOut())}
     >
@@ -15,3 +16,9 @@ export default () => {
     </Button>
   );
 };
+
+SignOut.defaultProps = {
+  loading: false,
+};
+
+export default SignOut;

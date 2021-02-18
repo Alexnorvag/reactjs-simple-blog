@@ -4,7 +4,12 @@ import { extraReducersAdapter } from '../../../utils/reducersUtils';
 import { readFromLocalStorage } from '../../../utils/localStorageUtils';
 import { reducers, extraReducers } from './reducer';
 import { RootState } from '../../../store';
-import { signUp, signIn, signOut } from './actions';
+import {
+  signUp,
+  signIn,
+  signOut,
+  resetAuth,
+} from './actions';
 
 export interface AuthState {
   signedIn: boolean;
@@ -15,7 +20,7 @@ export interface AuthState {
 const initialState: AuthState = {
   signedIn: !!readFromLocalStorage('accessToken'),
   userName: readFromLocalStorage('currentUserName') || '',
-  loading: loadingStatuses.pending,
+  loading: loadingStatuses.succeeded,
 };
 
 export const slice = createSlice({
@@ -36,6 +41,7 @@ export const actions = {
   signUp,
   signIn,
   signOut,
+  resetAuth,
 };
 
 export default slice.reducer;

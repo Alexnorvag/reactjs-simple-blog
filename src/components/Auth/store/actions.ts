@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { createAsyncThunk, createAction } from '@reduxjs/toolkit';
-import { clearLocalStorage, writeToLocalStorage } from '../../../utils/localStorageUtils';
+import {
+  clearLocalStorage,
+  getAccessToken,
+  writeToLocalStorage,
+} from '../../../utils/localStorageUtils';
 import { apiUrl } from '../../../constants/api';
 
 export interface AuthCredentials {
@@ -18,7 +22,7 @@ export const signUp = createAsyncThunk(
 
 export const signIn = createAsyncThunk(
   'auth/signIn',
-  async (authCredentials: AuthCredentials): Promise<void> => {
+  async (authCredentials: AuthCredentials): Promise<{ username: string }> => {
     const { data } = await axios.post(`${apiUrl}/auth/signIn`, authCredentials);
 
     // REVIEW: Actions creators isn't the best place to perform side effects
@@ -29,14 +33,33 @@ export const signIn = createAsyncThunk(
       currentUserName: data.username,
       currentUserId: data._id,
     });
+
+    return { username: data.username };
   },
 );
 
-export const signOut = createAction(
+export const signOut = createAsyncThunk(
   'auth/signOut',
-  (): { payload: boolean } => {
+  async (): Promise<void> => {
+    await axios.post(
+      `${apiUrl}/auth/signOut`,
+      null,
+      { headers: { Authorization: getAccessToken() } },
+    );
+
     // REVIEW: Actions creators isn't the best place to perform side effects
     // It is would be better to move side effects to middleware or somewhere else
+    clearLocalStorage();
+  },
+);
+
+/**
+ * Resets auth state
+ * @param state
+ */
+export const resetAuth = createAction(
+  'auth/resetAuth',
+  (): { payload: boolean } => {
     clearLocalStorage();
 
     return { payload: true };

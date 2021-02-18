@@ -15,11 +15,11 @@ interface DefaultProps extends EditorProps {
   initialData: NewPostData,
 }
 
+let editor: any;
+
 const Editor = ({ onSubmit, initialData }: DefaultProps) => {
   const [title, setTitle] = useState(initialData.title);
   const [isEditorReady, setEditorReady] = useState(false);
-
-  let editor: any;
 
   const onEditorSubmit = () => {
     onSubmit({ title, body: editor.getData() });

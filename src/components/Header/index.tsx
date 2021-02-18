@@ -4,11 +4,13 @@ import { useSelector } from 'react-redux';
 import { Button, Layout, Menu } from 'antd';
 import { HighlightOutlined } from '@ant-design/icons';
 import { selectors as authSelectors } from '../Auth/store';
+import { loadingStatuses } from '../../constants/api';
 import SignOut from '../Auth/SignOut';
 import styles from './header.module.less';
 
 export default () => {
   const signedIn: boolean = useSelector(authSelectors.selectSignedIn);
+  const authLoading: boolean = useSelector(authSelectors.selectLoading) === loadingStatuses.pending;
   const useName: string = useSelector(authSelectors.selectUserName);
   const { pathname } = useLocation();
 
@@ -36,13 +38,13 @@ export default () => {
               <div>
                 <span className={styles.usernameInHeader}>{useName}</span>
                 {' '}
-                <SignOut />
+                <SignOut loading={authLoading} />
               </div>
             </>
           )
           : (
             <Link to="/auth/signIn">
-              <Button type="default">Sign In</Button>
+              <Button type="default" loading={authLoading}>Sign In</Button>
             </Link>
           )
       }
