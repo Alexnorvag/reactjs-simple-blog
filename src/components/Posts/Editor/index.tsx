@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Input, Typography } from 'antd';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { UploadAdapterType } from '../../../utils/uploadAdapter';
 import { NewPostData } from '../store';
 import styles from './editor.module.less';
 import './ckeditor.override.css';
@@ -9,6 +10,7 @@ import './ckeditor.override.css';
 interface EditorProps {
   onSubmit: (postData: NewPostData) => any;
   initialData?: NewPostData,
+  uploadAdapter?: UploadAdapterType,
 }
 
 interface DefaultProps extends EditorProps {
@@ -17,7 +19,11 @@ interface DefaultProps extends EditorProps {
 
 let editor: any;
 
-const Editor = ({ onSubmit, initialData }: DefaultProps) => {
+const Editor = ({
+  onSubmit,
+  initialData,
+  uploadAdapter,
+}: DefaultProps) => {
   const [title, setTitle] = useState(initialData.title);
   const [isEditorReady, setEditorReady] = useState(false);
 
@@ -37,6 +43,23 @@ const Editor = ({ onSubmit, initialData }: DefaultProps) => {
       </Typography.Title>
       <CKEditor
         editor={ClassicEditor}
+        config={{
+          extraPlugins: uploadAdapter ? [uploadAdapter] : undefined,
+          toolbar: [
+            'heading',
+            'bold',
+            'italic',
+            'link',
+            'bulletedList',
+            'numberedList',
+            'imageUpload',
+            'blockQuote',
+            'undo',
+            'redo',
+            'outdent',
+            'indent',
+          ],
+        }}
         data={initialData.body}
         disabled={!isEditorReady}
         onReady={(ckEditor: any) => {
@@ -46,7 +69,9 @@ const Editor = ({ onSubmit, initialData }: DefaultProps) => {
         }}
       />
       <Typography.Paragraph className={styles.submitButtonWrapper}>
-        <Button type="primary" disabled={!isEditorReady} onClick={onEditorSubmit}>Submit</Button>
+        <Button type="primary" disabled={!isEditorReady} onClick={onEditorSubmit}>
+          Submit
+        </Button>
       </Typography.Paragraph>
     </div>
   );
@@ -57,6 +82,7 @@ Editor.defaultProps = {
     title: 'Untitled',
     body: '<p>Please enter text..</p>',
   },
+  uploadAdapter: undefined,
 };
 
 export default React.memo(Editor);

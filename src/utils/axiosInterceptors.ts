@@ -31,15 +31,22 @@ const refreshAccessToken = async (): Promise<string|never> => {
  */
 export default () => {
   axios.interceptors.response.use(undefined, async (error) => {
-    if (error.response.data.message === 'Access token invalid') {
-      try {
-        const retryConfig = error.config;
+    const { response } = error;
 
-        retryConfig.headers.Authorization = `Bearer ${await refreshAccessToken()}`;
+    if (response) {
+      const { data: { message, statusCode } } = response;
+      if (message === 'Access token invalid') {
+        try {
+          const retryConfig = error.config;
 
-        return axios.request(retryConfig);
-      } catch (e) {
-        store.dispatch(actions.resetAuth());
+          retryConfig.headers.Authorization = `Bearer ${await refreshAccessToken()}`;
+
+          return axios.request(retryConfig);
+        } catch (e) {
+          store.dispatch(actions.resetAuth());
+        }
+      } else {
+        throw new Error(`${statusCode} ${message}`);
       }
     }
 

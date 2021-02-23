@@ -1,25 +1,33 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Skeleton } from 'antd';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectors, actions, NewPostData } from '../store';
-import { loadingStatuses } from '../../../constants/api';
-import SomethingWentWrong from '../../common/Errors/SomethingWentWrong';
+import { requestStatuses } from '../../../constants/api';
+import uploadAdapter from '../../../utils/uploadAdapter';
+import useDebounceSelector from '../../../utils/useDebouncedSelector';
+import ErrorPage from '../../common/ErrorPage';
+import Preloader from '../../common/Preloader';
 import Editor from '../Editor';
 
 export default () => {
-  const loading = useSelector(selectors.selectCreatedPostLoading);
+  const { status, statusCode } = useDebounceSelector(selectors.selectCreatedPostRequestState);
+  const _id: string = useSelector(selectors.selectNewPostId);
   const dispatch = useDispatch();
 
-  switch (loading) {
-    case loadingStatuses.pending:
-      return <Skeleton active />;
-    case loadingStatuses.failed:
-      return <SomethingWentWrong message="Cannot create post" />;
+  useEffect(() => {
+    dispatch(actions.fetchNewPostId());
+  }, []);
+
+  switch (status) {
+    case requestStatuses.pending:
+      return <Preloader />;
+    case requestStatuses.failed:
+      return <ErrorPage statusCode={statusCode} />;
     default:
       return (
         <Editor
+          uploadAdapter={uploadAdapter(_id)}
           onSubmit={(postData: NewPostData) => {
-            dispatch(actions.createPost(postData));
+            dispatch(actions.createPost({ ...postData, _id }));
           }}
         />
       );

@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 
 import { PayloadAction } from '@reduxjs/toolkit';
-import { loadingStatuses } from '../../../constants/api';
-import { handleDefaultLoadingStatuses, ExtraReducersConfig } from '../../../utils/reducersUtils';
+import { requestStatuses } from '../../../constants/api';
+import { handleDefaultRequestStatuses, ExtraReducersConfig, RequestState } from '../../../utils/reducersUtils';
 import { AuthState } from './index';
 import {
   signUp,
@@ -11,11 +11,16 @@ import {
   resetAuth,
 } from './actions';
 
+const successRequestState: RequestState = {
+  status: requestStatuses.succeeded,
+  statusCode: null,
+};
+
 export const reducers = {};
 
 export const extraReducers: ExtraReducersConfig = [
   // SignUp reducers
-  ...handleDefaultLoadingStatuses(signUp),
+  ...handleDefaultRequestStatuses(signUp),
 
   // SignIn reducers
   [signIn.fulfilled, (
@@ -23,26 +28,26 @@ export const extraReducers: ExtraReducersConfig = [
     { payload: { username } }: PayloadAction<{ username: string }>,
   ) => {
     state.signedIn = true;
-    state.loading = loadingStatuses.succeeded;
+    state.requestState = successRequestState;
     state.userName = username;
   }],
-  ...handleDefaultLoadingStatuses(
-    signIn, [loadingStatuses.failed, loadingStatuses.pending],
+  ...handleDefaultRequestStatuses(
+    signIn, [requestStatuses.failed, requestStatuses.pending],
   ),
 
   // SignOut reducers
   [signOut.fulfilled, (state: AuthState) => {
     state.signedIn = false;
-    state.loading = loadingStatuses.succeeded;
+    state.requestState = successRequestState;
   }],
-  ...handleDefaultLoadingStatuses(
-    signOut, [loadingStatuses.failed, loadingStatuses.pending],
+  ...handleDefaultRequestStatuses(
+    signOut, [requestStatuses.failed, requestStatuses.pending],
   ),
 
   // Reset auth reducer
   [resetAuth.type, (state: AuthState) => {
     state.userName = '';
     state.signedIn = false;
-    state.loading = loadingStatuses.succeeded;
+    state.requestState = successRequestState;
   }],
 ];

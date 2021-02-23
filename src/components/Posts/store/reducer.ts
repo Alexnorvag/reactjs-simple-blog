@@ -2,8 +2,12 @@
 
 import { PayloadAction } from '@reduxjs/toolkit';
 import { PostData, PostsState } from './index';
-import { loadingStatuses } from '../../../constants/api';
-import { handleDefaultLoadingStatuses, ExtraReducersConfig } from '../../../utils/reducersUtils';
+import { requestStatuses } from '../../../constants/api';
+import {
+  handleDefaultRequestStatuses,
+  ExtraReducersConfig,
+  RequestState,
+} from '../../../utils/reducersUtils';
 import {
   createPost,
   fetchPosts,
@@ -11,13 +15,19 @@ import {
   fetchBeingEditedPost,
   updatePost,
   deletePost,
+  fetchNewPostId,
 } from './actions';
+
+const successRequestState: RequestState = {
+  status: requestStatuses.succeeded,
+  statusCode: null,
+};
 
 export const reducers = {};
 
 export const extraReducers: ExtraReducersConfig = [
   // Create post reducers
-  ...handleDefaultLoadingStatuses(
+  ...handleDefaultRequestStatuses(
     createPost,
     undefined,
     ({ newPost }: PostsState) => newPost,
@@ -30,11 +40,11 @@ export const extraReducers: ExtraReducersConfig = [
   ) => {
     postsList.posts = payload.posts;
     postsList.total = payload.total;
-    postsList.loading = loadingStatuses.succeeded;
+    postsList.requestState = successRequestState;
   }],
-  ...handleDefaultLoadingStatuses(
+  ...handleDefaultRequestStatuses(
     fetchPosts,
-    [loadingStatuses.failed, loadingStatuses.pending],
+    [requestStatuses.failed, requestStatuses.pending],
     ({ postsList }: PostsState) => postsList,
   ),
 
@@ -44,11 +54,11 @@ export const extraReducers: ExtraReducersConfig = [
     { payload }: PayloadAction<PostData>,
   ) => {
     currentlyViewedPost.post = payload;
-    currentlyViewedPost.loading = loadingStatuses.succeeded;
+    currentlyViewedPost.requestState = successRequestState;
   }],
-  ...handleDefaultLoadingStatuses(
+  ...handleDefaultRequestStatuses(
     fetchPost,
-    [loadingStatuses.failed, loadingStatuses.pending],
+    [requestStatuses.failed, requestStatuses.pending],
     ({ currentlyViewedPost }: PostsState) => currentlyViewedPost,
   ),
 
@@ -58,18 +68,22 @@ export const extraReducers: ExtraReducersConfig = [
     { payload }: PayloadAction<PostData>,
   ) => {
     beingEditedPost.post = payload;
-    beingEditedPost.loading = loadingStatuses.succeeded;
+    beingEditedPost.requestState = successRequestState;
   }],
-  ...handleDefaultLoadingStatuses(
+  ...handleDefaultRequestStatuses(
     fetchBeingEditedPost,
-    [loadingStatuses.failed, loadingStatuses.pending],
-    ({ currentlyViewedPost }: PostsState) => currentlyViewedPost,
+    [requestStatuses.failed, requestStatuses.pending],
+    ({ beingEditedPost }: PostsState) => beingEditedPost,
   ),
 
   // Update post reducers
-  ...handleDefaultLoadingStatuses(updatePost),
+  ...handleDefaultRequestStatuses(
+    updatePost,
+    undefined,
+    ({ beingEditedPost }: PostsState) => beingEditedPost,
+  ),
 
-  // Delete post reducers
+  // Delete post reducer
   [deletePost.fulfilled, (
     { postsList }: PostsState,
     { payload: { id } }: PayloadAction<{ id: string }>,
@@ -77,9 +91,18 @@ export const extraReducers: ExtraReducersConfig = [
     postsList.total -= 1;
     postsList.posts = postsList.posts.filter(({ _id }) => _id !== id);
   }],
-  ...handleDefaultLoadingStatuses(
-    deletePost,
-    [loadingStatuses.failed, loadingStatuses.pending],
-    ({ postsList }: PostsState) => postsList,
+
+  // Fetch new post id
+  [fetchNewPostId.fulfilled, (
+    { newPost }: PostsState,
+    { payload }: PayloadAction<string>,
+  ) => {
+    newPost._id = payload;
+    newPost.requestState = successRequestState;
+  }],
+  ...handleDefaultRequestStatuses(
+    fetchNewPostId,
+    [requestStatuses.failed, requestStatuses.pending],
+    ({ newPost }: PostsState) => newPost,
   ),
 ];

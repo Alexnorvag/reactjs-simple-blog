@@ -3,8 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { List, Skeleton, Typography } from 'antd';
 import { selectors as postSelectors, actions } from '../store';
-import { loadingStatuses, postsDefaultSearchParams } from '../../../constants/api';
-import SomethingWentWrong from '../../common/Errors/SomethingWentWrong';
+import { requestStatuses, postsDefaultSearchParams } from '../../../constants/api';
+import ErrorPage from '../../common/ErrorPage';
 import Search from '../../common/Search';
 import Sorting from '../../common/Sorting';
 import Checkbox from '../../common/Checkbox';
@@ -16,7 +16,10 @@ const mockPostItem = {};
 const previewEmptyArray = (new Array(postsDefaultSearchParams.pageSize)).fill(mockPostItem);
 
 export default ({ location: { search } }: RouteComponentProps) => {
-  const { posts, loading } = useSelector(postSelectors.selectPostsList);
+  const {
+    posts,
+    requestState: { status, statusCode },
+  } = useSelector(postSelectors.selectPostsList);
   const currentUserId: string|null = localStorage.getItem('currentUserId');
   const dispatch = useDispatch();
 
@@ -24,15 +27,15 @@ export default ({ location: { search } }: RouteComponentProps) => {
     dispatch(actions.fetchPosts(search));
   }, [search]);
 
-  if (loading === loadingStatuses.failed) {
-    return <SomethingWentWrong message="Cannot load posts" />;
+  if (status === requestStatuses.failed) {
+    return <ErrorPage statusCode={statusCode} />;
   }
 
   return (
     <List
       itemLayout="vertical"
       size="large"
-      dataSource={loading === loadingStatuses.pending ? previewEmptyArray : posts}
+      dataSource={status === requestStatuses.pending ? previewEmptyArray : posts}
       header={(
         <Typography.Paragraph className={styles.projectsFilters}>
           <Sorting search={search} queryField="sorting" labelText="Created at" />

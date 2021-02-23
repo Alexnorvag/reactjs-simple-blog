@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { loadingStatuses, LoadingStatuses } from '../../../constants/api';
-import { extraReducersAdapter } from '../../../utils/reducersUtils';
+import { requestStatuses } from '../../../constants/api';
+import { extraReducersAdapter, RequestState } from '../../../utils/reducersUtils';
 import { reducers, extraReducers } from './reducer';
 import { RootState } from '../../../store';
 import { UserData } from '../../Users/store';
 import {
   createPost,
+  fetchNewPostId,
   updatePost,
   fetchPost,
   fetchBeingEditedPost,
@@ -20,23 +21,24 @@ export interface PostData {
   user: Omit<UserData, 'posts'>;
 }
 
-export type NewPostData = Omit<PostData, '_id' | 'user'>;
+export type NewPostData = Omit<PostData, '_id' | 'user'> & { _id?: string };
 
 interface PostState {
   post: PostData,
-  loading: LoadingStatuses;
+  requestState: RequestState;
 }
 
 export interface PostsState {
   beingEditedPost: PostState;
   currentlyViewedPost: PostState;
   newPost: {
-    loading: LoadingStatuses;
+    _id: string,
+    requestState: RequestState;
   };
   postsList: {
     posts: PostData[],
     total: number;
-    loading: LoadingStatuses;
+    requestState: RequestState;
   };
 }
 
@@ -50,22 +52,28 @@ const postInitialState: PostData = {
   },
 };
 
+const requestInitialState: RequestState = {
+  status: requestStatuses.pending,
+  statusCode: null,
+};
+
 const initialState: PostsState = {
   beingEditedPost: {
     post: postInitialState,
-    loading: loadingStatuses.pending,
+    requestState: requestInitialState,
   },
   currentlyViewedPost: {
     post: postInitialState,
-    loading: loadingStatuses.pending,
+    requestState: requestInitialState,
   },
   newPost: {
-    loading: loadingStatuses.succeeded,
+    _id: '',
+    requestState: requestInitialState,
   },
   postsList: {
     posts: [],
-    loading: loadingStatuses.pending,
     total: 0,
+    requestState: requestInitialState,
   },
 };
 
@@ -78,7 +86,8 @@ export const slice = createSlice({
 
 export const selectors = {
   selectCurrentlyViewedPost: (state: RootState) => state.posts.currentlyViewedPost,
-  selectCreatedPostLoading: (state: RootState) => state.posts.newPost.loading,
+  selectCreatedPostRequestState: (state: RootState) => state.posts.newPost.requestState,
+  selectNewPostId: (state: RootState) => state.posts.newPost._id,
   selectBeingEditedPost: (state: RootState) => state.posts.beingEditedPost,
   selectPostsList: (state: RootState) => state.posts.postsList,
 };
@@ -86,6 +95,7 @@ export const selectors = {
 export const actions = {
   ...slice.actions,
   createPost,
+  fetchNewPostId,
   fetchPost,
   fetchBeingEditedPost,
   fetchPosts,

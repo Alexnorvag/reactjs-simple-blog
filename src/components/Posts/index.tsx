@@ -4,7 +4,8 @@ import PostsList from './PostsList';
 import EditPost from './EditPost';
 import NewPost from './NewPost';
 import ViewPost from './ViewPost';
-import NotFound from '../common/Errors/NotFound';
+import ErrorPage from '../common/ErrorPage';
+import { requestStatusCodes } from '../../constants/api';
 
 export default () => (
   <Switch>
@@ -12,6 +13,6 @@ export default () => (
     <Route exact path="/post/:id" component={ViewPost} />
     <Route exact path="/post/:id/edit" component={EditPost} />
     <Route exact path="/post" component={NewPost} />
-    <NotFound />
+    <ErrorPage statusCode={requestStatusCodes.notFound} />
   </Switch>
 );

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { loadingStatuses, LoadingStatuses } from '../../../constants/api';
-import { extraReducersAdapter } from '../../../utils/reducersUtils';
+import { requestStatuses } from '../../../constants/api';
+import { extraReducersAdapter, RequestState } from '../../../utils/reducersUtils';
 import { readFromLocalStorage } from '../../../utils/localStorageUtils';
 import { reducers, extraReducers } from './reducer';
 import { RootState } from '../../../store';
@@ -14,13 +14,18 @@ import {
 export interface AuthState {
   signedIn: boolean;
   userName: string,
-  loading: LoadingStatuses;
+  requestState: RequestState;
 }
+
+const requestInitialState: RequestState = {
+  status: requestStatuses.succeeded,
+  statusCode: null,
+};
 
 const initialState: AuthState = {
   signedIn: !!readFromLocalStorage('accessToken'),
   userName: readFromLocalStorage('currentUserName') || '',
-  loading: loadingStatuses.succeeded,
+  requestState: requestInitialState,
 };
 
 export const slice = createSlice({
@@ -33,7 +38,7 @@ export const slice = createSlice({
 export const selectors = {
   selectSignedIn: (state: RootState) => state.auth.signedIn,
   selectUserName: (state: RootState) => state.auth.userName,
-  selectLoading: (state: RootState) => state.auth.loading,
+  selectRequestState: (state: RootState) => state.auth.requestState,
 };
 
 export const actions = {

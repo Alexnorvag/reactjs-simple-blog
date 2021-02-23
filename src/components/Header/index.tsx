@@ -4,15 +4,16 @@ import { useSelector } from 'react-redux';
 import { Button, Layout, Menu } from 'antd';
 import { HighlightOutlined } from '@ant-design/icons';
 import { selectors as authSelectors } from '../Auth/store';
-import { loadingStatuses } from '../../constants/api';
+import { requestStatuses } from '../../constants/api';
 import SignOut from '../Auth/SignOut';
 import styles from './header.module.less';
 
 export default () => {
-  const signedIn: boolean = useSelector(authSelectors.selectSignedIn);
-  const authLoading: boolean = useSelector(authSelectors.selectLoading) === loadingStatuses.pending;
-  const useName: string = useSelector(authSelectors.selectUserName);
   const { pathname } = useLocation();
+  const useName: string = useSelector(authSelectors.selectUserName);
+  const signedIn: boolean = useSelector(authSelectors.selectSignedIn);
+  const authLoading: boolean = useSelector(authSelectors.selectRequestState)
+    .status === requestStatuses.pending;
 
   return (
     <Layout.Header className={styles.navHeader}>

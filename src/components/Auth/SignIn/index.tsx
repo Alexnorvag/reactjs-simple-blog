@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { Location } from 'history';
 import {
-  Spin,
   Form,
   Input,
   Button,
@@ -12,12 +11,13 @@ import {
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { selectors, actions } from '../store';
 import { AuthCredentials } from '../store/actions';
-import { loadingStatuses } from '../../../constants/api';
-import SomethingWentWrong from '../../common/Errors/SomethingWentWrong';
+import { requestStatuses } from '../../../constants/api';
+import ErrorPage from '../../common/ErrorPage';
 import styles from './signIn.module.less';
+import Preloader from '../../common/Preloader';
 
 export default ({ location }: { location: Location<string> }) => {
-  const loading = useSelector(selectors.selectLoading);
+  const { status, statusCode } = useSelector(selectors.selectRequestState);
   const signedIn = useSelector(selectors.selectSignedIn);
   const dispatch = useDispatch();
 
@@ -26,8 +26,8 @@ export default ({ location }: { location: Location<string> }) => {
   };
 
   if (!signedIn) {
-    switch (loading) {
-      case loadingStatuses.succeeded:
+    switch (status) {
+      case requestStatuses.succeeded:
         return (
           <div className={styles.formWrapper}>
             <Form
@@ -65,20 +65,17 @@ export default ({ location }: { location: Location<string> }) => {
             </Form>
           </div>
         );
-      case loadingStatuses.pending:
-        return (
-          <div className={styles.spinWrapper}>
-            <Spin size="large" tip="Signing In..." />
-          </div>
-        );
+      case requestStatuses.pending:
+        return <Preloader tip="Signing In..." />;
       default:
         return (
-          <SomethingWentWrong
+          <ErrorPage
             message={(
               <Button onClick={() => dispatch(actions.resetAuth())}>
                 Try again
               </Button>
             )}
+            statusCode={statusCode}
           />
         );
     }

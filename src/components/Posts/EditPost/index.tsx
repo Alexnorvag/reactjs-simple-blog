@@ -3,13 +3,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Skeleton } from 'antd';
 import { selectors, actions, NewPostData } from '../store';
-import { loadingStatuses } from '../../../constants/api';
-import SomethingWentWrong from '../../common/Errors/SomethingWentWrong';
+import { requestStatuses } from '../../../constants/api';
+import uploadAdapter from '../../../utils/uploadAdapter';
+import ErrorPage from '../../common/ErrorPage';
 import styles from './editPost.module.less';
 import Editor from '../Editor';
 
 export default () => {
-  const { post, loading } = useSelector(selectors.selectBeingEditedPost);
+  const {
+    post,
+    requestState: { status, statusCode },
+  } = useSelector(selectors.selectBeingEditedPost);
   const { id } : { id: string } = useParams();
   const dispatch = useDispatch();
 
@@ -17,14 +21,15 @@ export default () => {
     dispatch(actions.fetchBeingEditedPost(id));
   }, []);
 
-  switch (loading) {
-    case loadingStatuses.pending:
+  switch (status) {
+    case requestStatuses.pending:
       return <Skeleton active paragraph={{ rows: 12 }} className={styles.postSkeleton} />;
-    case loadingStatuses.failed:
-      return <SomethingWentWrong message="Cannot load post" />;
+    case requestStatuses.failed:
+      return <ErrorPage statusCode={statusCode} />;
     default:
       return (
         <Editor
+          uploadAdapter={uploadAdapter(id)}
           initialData={post}
           onSubmit={(updatedPostData: NewPostData) => {
             dispatch(actions.updatePost({ id, postData: updatedPostData }));

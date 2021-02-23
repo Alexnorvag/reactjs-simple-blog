@@ -1,10 +1,15 @@
 /* eslint-disable no-param-reassign */
 
 import { PayloadAction } from '@reduxjs/toolkit';
-import { loadingStatuses } from '../../../constants/api';
-import { handleDefaultLoadingStatuses, ExtraReducersConfig } from '../../../utils/reducersUtils';
+import { requestStatuses } from '../../../constants/api';
+import { handleDefaultRequestStatuses, ExtraReducersConfig, RequestState } from '../../../utils/reducersUtils';
 import { fetchUsers, deleteUser } from './actions';
 import { UserData, UsersState } from './index';
+
+const successRequestState: RequestState = {
+  status: requestStatuses.succeeded,
+  statusCode: null,
+};
 
 export const reducers = {};
 
@@ -18,10 +23,10 @@ export const extraReducers: ExtraReducersConfig = [
 
     state.users = payload.users;
     state.total = payload.total;
-    state.loading = loadingStatuses.succeeded;
+    state.requestState = successRequestState;
   }],
-  ...handleDefaultLoadingStatuses(
-    fetchUsers, [loadingStatuses.failed, loadingStatuses.pending],
+  ...handleDefaultRequestStatuses(
+    fetchUsers, [requestStatuses.failed, requestStatuses.pending],
   ),
 
   // Delete user reducers
@@ -31,9 +36,9 @@ export const extraReducers: ExtraReducersConfig = [
   ) => {
     state.total -= 1;
     state.users = state.users.filter(({ _id }) => _id !== id);
-    state.loading = loadingStatuses.succeeded;
+    state.requestState = successRequestState;
   }],
-  ...handleDefaultLoadingStatuses(
-    deleteUser, [loadingStatuses.failed, loadingStatuses.pending],
+  ...handleDefaultRequestStatuses(
+    deleteUser, [requestStatuses.failed, requestStatuses.pending],
   ),
 ];

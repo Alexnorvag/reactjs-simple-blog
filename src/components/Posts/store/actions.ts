@@ -77,15 +77,37 @@ export const updatePost = createAsyncThunk(
 export const deletePost = createAsyncThunk(
   'posts/delete',
   async (id: string): Promise<{ id: string }> => {
-    await axios.delete(
-      `${apiUrl}/posts/${id}`,
-      { headers: { Authorization: getAccessToken() } },
-    );
+    try {
+      await axios.delete(
+        `${apiUrl}/posts/${id}`,
+        { headers: { Authorization: getAccessToken() } },
+      );
+    } catch (e) {
+      const errorMessage: string = 'Cannot delete post!';
+
+      // REVIEW: Actions creators isn't the best place to perform side effects
+      // It is would be better to move side effects to middleware or somewhere else
+      message.error(errorMessage);
+
+      throw new Error(errorMessage);
+    }
 
     // REVIEW: Actions creators isn't the best place to perform side effects
     // It is would be better to move side effects to middleware or somewhere else
     message.success('Post successfully deleted!');
 
     return { id };
+  },
+);
+
+export const fetchNewPostId = createAsyncThunk(
+  'posts/newId',
+  async (): Promise<string> => {
+    const { data } = await axios.get(
+      `${apiUrl}/posts/newId`,
+      { headers: { Authorization: getAccessToken() } },
+    );
+
+    return data;
   },
 );

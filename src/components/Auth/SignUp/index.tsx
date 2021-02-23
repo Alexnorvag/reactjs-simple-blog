@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import {
-  Spin,
   Form,
   Input,
   Button,
@@ -11,12 +10,13 @@ import {
 import { UserAddOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
 import { selectors, actions } from '../store';
 import { AuthCredentials } from '../store/actions';
-import { loadingStatuses } from '../../../constants/api';
-import SomethingWentWrong from '../../common/Errors/SomethingWentWrong';
+import { requestStatuses } from '../../../constants/api';
+import ErrorPage from '../../common/ErrorPage';
 import styles from './signUp.module.less';
+import Preloader from '../../common/Preloader';
 
 export default () => {
-  const loading = useSelector(selectors.selectLoading);
+  const { status, statusCode } = useSelector(selectors.selectRequestState);
   const [editMode, setEditMode] = useState(true);
   const dispatch = useDispatch();
 
@@ -65,21 +65,18 @@ export default () => {
     );
   }
 
-  switch (loading) {
-    case loadingStatuses.pending:
+  switch (status) {
+    case requestStatuses.pending:
+      return <Preloader tip="Signing Up..." />;
+    case requestStatuses.failed:
       return (
-        <div className={styles.spinWrapper}>
-          <Spin size="large" tip="Signing Up..." />
-        </div>
-      );
-    case loadingStatuses.failed:
-      return (
-        <SomethingWentWrong
+        <ErrorPage
           message={(
             <Button onClick={() => setEditMode(true)}>
               Try again
             </Button>
           )}
+          statusCode={statusCode}
         />
       );
     default:

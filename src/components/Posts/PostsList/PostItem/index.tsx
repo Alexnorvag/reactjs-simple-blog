@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import parseHtml from 'html-react-parser';
+import { List, Space, Typography } from 'antd';
 import {
-  Avatar,
-  List,
-  Space,
-  Typography,
-} from 'antd';
-import { MessageOutlined, EditOutlined, UserOutlined } from '@ant-design/icons';
+  EditOutlined,
+  UserOutlined,
+  EyeOutlined,
+} from '@ant-design/icons';
 import { PostData } from '../../store';
 import DeletePost from '../../DeletePost';
 import styles from './postItem.module.less';
@@ -40,34 +39,30 @@ const PostItem = (
   return (
     <List.Item
       key={_id}
-      actions={[
-        <IconText icon={UserOutlined} text={user.username} />,
-        <IconText icon={MessageOutlined} text={Math.random().toFixed(1).slice(-1)} key="list-vertical-message" />,
-      ]}
-      extra={(
-        <img
-          width={272}
-          alt="logo"
-          src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-        />
-      )}
+      className={styles.postItem}
+      actions={[<IconText icon={UserOutlined} text={user.username} />]}
     >
       <List.Item.Meta
-        avatar={
-          user._id === currentUserId
-            ? (
-              <>
-                <Link to={`${postLink}/edit`} className={styles.editPostIcon}>
-                  <EditOutlined />
-                </Link>
-                <DeletePost id={_id} className={styles.editPostIcon} />
-              </>
-            )
-            : <Avatar src="'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'" />
-        }
+        avatar={(
+          <>
+            <Link to={postLink} className={styles.editPostIcon}>
+              <EyeOutlined />
+            </Link>
+            {
+              user._id === currentUserId ? (
+                <>
+                  <Link to={`${postLink}/edit`} className={styles.editPostIcon}>
+                    <EditOutlined />
+                  </Link>
+                  <DeletePost id={_id} className={styles.editPostIcon} />
+                </>
+              ) : null
+            }
+          </>
+      )}
         title={<Link to={postLink}>{title}</Link>}
       />
-      <Typography.Paragraph ellipsis={{ rows: 3, expandable: false, symbol: 'more' }}>
+      <Typography.Paragraph ellipsis={{ rows: 3, expandable: false, symbol: 'more' }} className="ck-content">
         {parseHtml(body)}
       </Typography.Paragraph>
     </List.Item>

@@ -1,7 +1,8 @@
 {
-  "name": "my-app",
-  "version": "0.1.0",
-  "private": true,
+  "name": "reactjs-simple-blog",
+  "version": "1.0.0",
+  "author": "Yaroslav Zhuk",
+  "license": "MIT",
   "dependencies": {
     "@ant-design/dark-theme": "^2.0.2",
     "@ant-design/icons": "^4.4.0",

@@ -1,13 +1,28 @@
 /* eslint-disable no-param-reassign */
 
 import { ActionReducerMapBuilder, CaseReducer } from '@reduxjs/toolkit';
-import { loadingStatuses, LoadingStatuses, statusesToThunkMapping } from '../constants/api';
+import {
+  requestStatuses,
+  RequestStatus,
+  statusesToThunkMapping,
+  RequestStatusCode,
+  requestStatusCodes,
+} from '../constants/api';
+
+const statusCodes: RequestStatusCode[] = Object.values(requestStatusCodes);
+
+export type RequestStatusCodeState = RequestStatusCode | null;
+
+export interface RequestState {
+  status: RequestStatus,
+  statusCode: RequestStatusCodeState,
+}
 
 type ReducerKey = any;
 type ReducerState = any;
 type ExtraReducer = CaseReducer<any, ReturnType<any>> | CaseReducer<any, any>;
 type ReducerConfig = [ReducerKey, ExtraReducer];
-type WithLoading<S> = S & { loading: LoadingStatuses };
+type WithRequestState<S> = S & { requestState: RequestState };
 
 export type ExtraReducersConfig = ReducerConfig[];
 
@@ -23,26 +38,38 @@ export const extraReducersAdapter = <State>(extraReducers: ExtraReducersConfig) 
 );
 
 /**
- * Builds extra reducers config for handling default loading statuses
- * The second argument can be used to specify specific statuses (LoadingStatuses) as an array
+ * Builds extra reducers config for handling default request statuses
+ * The second argument can be used to specify specific statuses (RequestStatus) as an array
  * The third argument can be used for selecting where status should be written
  * @param actionCreator
  * @param statuses
  * @param pathSelector
  */
-export const handleDefaultLoadingStatuses = (
+export const handleDefaultRequestStatuses = (
   actionCreator: any,
-  statuses: LoadingStatuses[] = Object.values(loadingStatuses),
-  pathSelector?: (reducerState: ReducerState) => WithLoading<ReducerState>,
+  statuses: RequestStatus[] = Object.values(requestStatuses),
+  pathSelector?: (reducerState: ReducerState) => WithRequestState<ReducerState>,
 ): ExtraReducersConfig => statuses.map(
-  (status: LoadingStatuses): [ReducerKey, ExtraReducer] => [
+  (status: RequestStatus): [ReducerKey, ExtraReducer] => [
     actionCreator[statusesToThunkMapping[status]],
-    (reducerState: ReducerState): void => {
-      const targetState: WithLoading<ReducerState> = pathSelector
+    (reducerState: ReducerState, { error }): void => {
+      const { requestState }: WithRequestState<ReducerState> = pathSelector
         ? pathSelector(reducerState)
         : reducerState;
 
-      targetState.loading = status;
+      let statusCode: RequestStatusCodeState = null;
+
+      requestState.status = status;
+
+      if (error) {
+        const requestStatus: number = parseInt(error.message, 10);
+
+        if (!Number.isNaN(requestStatus) && (statusCodes as number[]).includes(requestStatus)) {
+          statusCode = requestStatus as RequestStatusCode;
+        }
+      }
+
+      requestState.statusCode = statusCode;
     },
   ],
 );

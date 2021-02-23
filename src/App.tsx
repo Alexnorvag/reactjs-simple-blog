@@ -7,12 +7,13 @@ import Users from './components/Users';
 import Posts from './components/Posts';
 import Footer from './components/Footer';
 import history from './constants/history';
+import styles from './app.module.less';
 
 export default () => (
   <Router history={history}>
     <Layout>
       <Header />
-      <Layout.Content style={{ padding: '0 50px' }}>
+      <Layout.Content className={styles.appContent}>
         <Switch>
           <Route path="/auth" component={Auth} />
           <Route path="/users" component={Users} />

@@ -3,20 +3,20 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Table, Typography } from 'antd';
 import { selectors as userSelectors, actions, UserData } from './store';
-import { LoadingStatuses, loadingStatuses, usersDefaultSearchParams } from '../../constants/api';
+import { requestStatuses, usersDefaultSearchParams } from '../../constants/api';
 import { updateSearch } from '../../utils/browserHistoryUtils';
-import SomethingWentWrong from '../common/Errors/SomethingWentWrong';
 import Search from '../common/Search';
 import Sorting from '../common/Sorting';
 import Delete from '../common/Delete';
 import styles from './usersTable.module.less';
+import ErrorPage from '../common/ErrorPage';
 
 const { pageSize } = usersDefaultSearchParams;
 
 export default ({ location: { search } }: RouteComponentProps) => {
   const users: UserData[] = useSelector(userSelectors.selectUsers);
   const total: number = useSelector(userSelectors.selectTotal);
-  const loading: LoadingStatuses = useSelector(userSelectors.selectLoading);
+  const { status, statusCode } = useSelector(userSelectors.selectRequestState);
   const dispatch = useDispatch();
 
   const handleChange = (pageNumber: number) => {
@@ -27,8 +27,8 @@ export default ({ location: { search } }: RouteComponentProps) => {
     dispatch(actions.fetchUsers(search));
   }, [search]);
 
-  if (loading === loadingStatuses.failed) {
-    return <SomethingWentWrong message="Cannot load users" />;
+  if (status === requestStatuses.failed) {
+    return <ErrorPage statusCode={statusCode} />;
   }
 
   return (
@@ -38,7 +38,7 @@ export default ({ location: { search } }: RouteComponentProps) => {
         <Search search={search} queryField="username" />
       </Typography.Paragraph>
       <Table
-        loading={loading === loadingStatuses.pending}
+        loading={status === requestStatuses.pending}
         pagination={{
           total,
           pageSize,
