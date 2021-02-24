@@ -1,4 +1,10 @@
-const storedFields = ['accessToken', 'refreshToken', 'currentUserName', 'currentUserId'] as const;
+const storedFields = [
+  'accessToken',
+  'refreshToken',
+  'currentUserName',
+  'currentUserId',
+  'currentUserRoles',
+] as const;
 
 type StoredField = typeof storedFields[number];
 
@@ -8,17 +14,20 @@ type StoredField = typeof storedFields[number];
  * @param value
  */
 export const writeToLocalStorage = (
-  fieldNameOrConfig: StoredField|{ [fieldName in StoredField]: string },
+  fieldNameOrConfig: StoredField|{ [fieldName in StoredField]?: string },
   value?: any,
 ): void => {
   if (typeof fieldNameOrConfig === 'string') {
     localStorage.setItem(fieldNameOrConfig, value);
   } else {
     Object.keys(fieldNameOrConfig).forEach(
-      (fieldName: string) => localStorage.setItem(
-        fieldName,
-        fieldNameOrConfig[fieldName as StoredField],
-      ),
+      (fieldName: string) => {
+        const fieldValue = fieldNameOrConfig[fieldName as StoredField];
+
+        if (fieldValue !== undefined) {
+          localStorage.setItem(fieldName, fieldValue);
+        }
+      },
     );
   }
 };

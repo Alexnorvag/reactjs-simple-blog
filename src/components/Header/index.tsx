@@ -5,6 +5,7 @@ import { Button, Layout, Menu } from 'antd';
 import { HighlightOutlined } from '@ant-design/icons';
 import { selectors as authSelectors } from '../Auth/store';
 import { requestStatuses } from '../../constants/api';
+import Role from '../../constants/role.enum';
 import SignOut from '../Auth/SignOut';
 import styles from './header.module.less';
 
@@ -12,6 +13,7 @@ export default () => {
   const { pathname } = useLocation();
   const useName: string = useSelector(authSelectors.selectUserName);
   const signedIn: boolean = useSelector(authSelectors.selectSignedIn);
+  const userRoles: string[] = useSelector(authSelectors.selectUserRoles);
   const authLoading: boolean = useSelector(authSelectors.selectRequestState)
     .status === requestStatuses.pending;
 
@@ -30,11 +32,13 @@ export default () => {
                     Create Post
                   </Link>
                 </Menu.Item>
-                <Menu.Item key="/users">
-                  <Link to="/users">
-                    Manage Users
-                  </Link>
-                </Menu.Item>
+                {userRoles.includes(Role.Admin) ? (
+                  <Menu.Item key="/users">
+                    <Link to="/users">
+                      Manage Users
+                    </Link>
+                  </Menu.Item>
+                ) : null}
               </Menu>
               <div>
                 <span className={styles.usernameInHeader}>{useName}</span>

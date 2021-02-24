@@ -17,6 +17,7 @@ export default ({ location: { search } }: RouteComponentProps) => {
   const users: UserData[] = useSelector(userSelectors.selectUsers);
   const total: number = useSelector(userSelectors.selectTotal);
   const { status, statusCode } = useSelector(userSelectors.selectRequestState);
+  const currentUserId: string|null = localStorage.getItem('currentUserId');
   const dispatch = useDispatch();
 
   const handleChange = (pageNumber: number) => {
@@ -61,10 +62,12 @@ export default ({ location: { search } }: RouteComponentProps) => {
             render: (id: string) => (
               <div className={styles.userActions}>
                 <Link to={`/?user=${id}`}>See user posts</Link>
-                <Delete
-                  onConfirm={() => dispatch(actions.deleteUser(id))}
-                  entityName="user"
-                />
+                {currentUserId !== id ? (
+                  <Delete
+                    onConfirm={() => dispatch(actions.deleteUser(id))}
+                    entityName="user"
+                  />
+                ) : null}
               </div>
             ),
           },

@@ -14,27 +14,40 @@ export interface AuthCredentials {
 
 export const signUp = createAsyncThunk(
   'auth/signUp',
-  async (authCredentials: AuthCredentials): Promise<void> => axios.post(
-    `${apiUrl}/auth/signUp`,
-    authCredentials,
-  ),
+  async (authCredentials: AuthCredentials): Promise<void> => {
+    await axios.post(
+      `${apiUrl}/auth/signUp`,
+      authCredentials,
+    );
+  },
 );
 
 export const signIn = createAsyncThunk(
   'auth/signIn',
-  async (authCredentials: AuthCredentials): Promise<{ username: string }> => {
-    const { data } = await axios.post(`${apiUrl}/auth/signIn`, authCredentials);
+  async (
+    authCredentials: AuthCredentials,
+  ): Promise<{ username: string, roles: string[] }> => {
+    const {
+      data: {
+        accessToken,
+        refreshToken,
+        username,
+        _id,
+        roles,
+      },
+    } = await axios.post(`${apiUrl}/auth/signIn`, authCredentials);
 
     // REVIEW: Actions creators isn't the best place to perform side effects
     // It is would be better to move side effects to middleware or somewhere else
     writeToLocalStorage({
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-      currentUserName: data.username,
-      currentUserId: data._id,
+      accessToken,
+      refreshToken,
+      currentUserId: _id,
+      currentUserName: username,
+      currentUserRoles: roles,
     });
 
-    return { username: data.username };
+    return { username, roles };
   },
 );
 

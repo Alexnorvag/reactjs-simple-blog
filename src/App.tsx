@@ -8,6 +8,7 @@ import Posts from './components/Posts';
 import Footer from './components/Footer';
 import history from './constants/history';
 import styles from './app.module.less';
+import './variables.less';
 
 export default () => (
   <Router history={history}>

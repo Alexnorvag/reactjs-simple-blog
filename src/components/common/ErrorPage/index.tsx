@@ -9,12 +9,13 @@ interface ErrorPageProps {
 }
 
 const ErrorPage = ({ statusCode, message }: ErrorPageProps) => (
-  <Result
-    className={styles.errorPageContent}
-    status={statusCode || undefined}
-    title={statusCode}
-    subTitle={message}
-  />
+  <div className={styles.errorPageContent}>
+    <Result
+      status={statusCode || undefined}
+      title={statusCode}
+      subTitle={message}
+    />
+  </div>
 );
 
 ErrorPage.defaultProps = {

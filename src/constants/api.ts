@@ -34,5 +34,5 @@ export const postsDefaultSearchParams = {
 
 export const usersDefaultSearchParams = {
   ...paginationDefaultSearchParams,
-  pageSize: 5,
+  pageSize: 7,
 };

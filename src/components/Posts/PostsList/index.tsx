@@ -3,7 +3,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { List, Skeleton, Typography } from 'antd';
 import { selectors as postSelectors, actions } from '../store';
+import { selectors as authSelectors } from '../../Auth/store';
 import { requestStatuses, postsDefaultSearchParams } from '../../../constants/api';
+import { updateSearch } from '../../../utils/browserHistoryUtils';
 import ErrorPage from '../../common/ErrorPage';
 import Search from '../../common/Search';
 import Sorting from '../../common/Sorting';
@@ -21,6 +23,7 @@ export default ({ location: { search } }: RouteComponentProps) => {
     requestState: { status, statusCode },
   } = useSelector(postSelectors.selectPostsList);
   const currentUserId: string|null = localStorage.getItem('currentUserId');
+  const signedIn: boolean = useSelector(authSelectors.selectSignedIn);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -39,9 +42,13 @@ export default ({ location: { search } }: RouteComponentProps) => {
       header={(
         <Typography.Paragraph className={styles.projectsFilters}>
           <Sorting search={search} queryField="sorting" labelText="Created at" />
-          <Checkbox search={search} queryField="personal" labelText="Show only personal:" />
+          {signedIn ? <Checkbox search={search} queryField="personal" labelText="Show only personal:" /> : null}
           <div className={styles.searchPost}>
-            <Search search={search} queryField="text" />
+            <Search
+              search={search}
+              queryField="text"
+              onChange={() => updateSearch({ pageNumber: 1 })}
+            />
           </div>
         </Typography.Paragraph>
       )}

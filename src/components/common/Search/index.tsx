@@ -4,9 +4,22 @@ import _ from 'lodash';
 import { updateSearch } from '../../../utils/browserHistoryUtils';
 import { readFromQueryString } from '../../../utils/queryStringUtils';
 
-export default ({ search, queryField }: { search: string, queryField: string }) => {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    updateSearch({ [queryField]: event.target.value });
+interface SearchProps {
+  search: string;
+  queryField: string;
+  onChange?: (value: string) => void;
+}
+
+interface DefaultProps extends SearchProps{
+  onChange: (value: string) => void;
+}
+
+const Search = (
+  { search, queryField, onChange }: DefaultProps,
+) => {
+  const handleChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>): void => {
+    updateSearch({ [queryField]: value });
+    onChange(value);
   };
 
   return (
@@ -18,3 +31,9 @@ export default ({ search, queryField }: { search: string, queryField: string }) 
     />
   );
 };
+
+Search.defaultProps = {
+  onChange: () => {},
+};
+
+export default Search;

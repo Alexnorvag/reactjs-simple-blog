@@ -25,11 +25,12 @@ export const extraReducers: ExtraReducersConfig = [
   // SignIn reducers
   [signIn.fulfilled, (
     state: AuthState,
-    { payload: { username } }: PayloadAction<{ username: string }>,
+    { payload: { username, roles } }: PayloadAction<{ username: string, roles: string[] }>,
   ) => {
     state.signedIn = true;
     state.requestState = successRequestState;
     state.userName = username;
+    state.roles = roles;
   }],
   ...handleDefaultRequestStatuses(
     signIn, [requestStatuses.failed, requestStatuses.pending],

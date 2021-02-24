@@ -13,8 +13,9 @@ import {
 
 export interface AuthState {
   signedIn: boolean;
-  userName: string,
+  userName: string;
   requestState: RequestState;
+  roles: string[];
 }
 
 const requestInitialState: RequestState = {
@@ -25,6 +26,7 @@ const requestInitialState: RequestState = {
 const initialState: AuthState = {
   signedIn: !!readFromLocalStorage('accessToken'),
   userName: readFromLocalStorage('currentUserName') || '',
+  roles: readFromLocalStorage('currentUserRoles')?.split(',') || [],
   requestState: requestInitialState,
 };
 
@@ -38,6 +40,7 @@ export const slice = createSlice({
 export const selectors = {
   selectSignedIn: (state: RootState) => state.auth.signedIn,
   selectUserName: (state: RootState) => state.auth.userName,
+  selectUserRoles: (state: RootState) => state.auth.roles,
   selectRequestState: (state: RootState) => state.auth.requestState,
 };
 
