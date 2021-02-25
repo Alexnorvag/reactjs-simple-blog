@@ -17,68 +17,72 @@ import styles from './signIn.module.less';
 import Preloader from '../../common/Preloader';
 
 export default ({ location }: { location: Location<string> }) => {
-  const { status, statusCode } = useSelector(selectors.selectRequestState);
-  const signedIn = useSelector(selectors.selectSignedIn);
+  const { status, statusCode } = useSelector(selectors.selectSignInRequestState);
+  const isSignedIn = useSelector(selectors.selectSignedIn);
+  const isPending = status === requestStatuses.pending;
   const dispatch = useDispatch();
 
   const onFinish = (values: AuthCredentials) => {
     dispatch(actions.signIn(values));
   };
 
-  if (!signedIn) {
-    switch (status) {
-      case requestStatuses.succeeded:
-        return (
-          <div className={styles.formWrapper}>
-            <Form
-              name="normal_login"
-              className={styles.loginForm}
-              onFinish={onFinish}
+  if (!isSignedIn) {
+    if (status === requestStatuses.succeeded || isPending || statusCode === 400) {
+      return (
+        <div className={styles.formWrapper}>
+          {isPending ? (
+            <Preloader
+              tip="Signing In..."
+              className={styles.formPreloader}
+            />
+          ) : null}
+          <Form
+            name="normal_login"
+            className={styles.fromContent}
+            onFinish={onFinish}
+          >
+            <Typography.Paragraph className={styles.formIcon}>
+              <UserOutlined />
+            </Typography.Paragraph>
+            <Form.Item
+              name="username"
+              rules={[{ required: true, message: 'Please input your Username!' }]}
             >
-              <Typography.Paragraph className={styles.formIcon}>
-                <UserOutlined />
-              </Typography.Paragraph>
-              <Form.Item
-                name="username"
-                rules={[{ required: true, message: 'Please input your Username!' }]}
-              >
-                <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
-              </Form.Item>
-              <Form.Item
-                name="password"
-                rules={[{ required: true, message: 'Please input your Password!' }]}
-              >
-                <Input
-                  prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="Password"
-                />
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit" className={styles.submitButton}>
-                  Log in
-                </Button>
-                Or
-                {' '}
-                <Link to="/auth/signUp">register now!</Link>
-              </Form.Item>
-            </Form>
-          </div>
-        );
-      case requestStatuses.pending:
-        return <Preloader tip="Signing In..." />;
-      default:
-        return (
-          <ErrorPage
-            message={(
-              <Button onClick={() => dispatch(actions.resetAuth())}>
-                Try again
+              <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+            </Form.Item>
+            <Form.Item
+              name="password"
+              rules={[{ required: true, message: 'Please input your Password!' }]}
+            >
+              <Input
+                prefix={<LockOutlined className="site-form-item-icon" />}
+                type="password"
+                placeholder="Password"
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" className={styles.submitButton}>
+                Log in
               </Button>
-            )}
-            statusCode={statusCode}
-          />
-        );
+              Or
+              {' '}
+              <Link to="/auth/signUp">register now!</Link>
+            </Form.Item>
+          </Form>
+        </div>
+      );
     }
+
+    return (
+      <ErrorPage
+        message={(
+          <Button onClick={() => dispatch(actions.resetAuth())}>
+            Try again
+          </Button>
+        )}
+        statusCode={statusCode}
+      />
+    );
   }
 
   return <Redirect to={location.state || ''} />;

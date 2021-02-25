@@ -16,21 +16,28 @@ import styles from './signUp.module.less';
 import Preloader from '../../common/Preloader';
 
 export default () => {
-  const { status, statusCode } = useSelector(selectors.selectRequestState);
+  const { status, statusCode } = useSelector(selectors.selectSignUpRequestState);
   const [editMode, setEditMode] = useState(true);
+  const isPending = status === requestStatuses.pending;
   const dispatch = useDispatch();
 
   const onFinish = (values: AuthCredentials) => {
-    setEditMode(false);
     dispatch(actions.signUp(values));
+    setEditMode(false);
   };
 
-  if (editMode) {
+  if (editMode || isPending || statusCode === 400) {
     return (
       <div className={styles.formWrapper}>
+        {isPending ? (
+          <Preloader
+            tip="Signing Up..."
+            className={styles.formPreloader}
+          />
+        ) : null}
         <Form
           name="normal_login"
-          className={styles.loginForm}
+          className={styles.fromContent}
           onFinish={onFinish}
         >
           <Typography.Paragraph className={styles.formIcon}>
@@ -65,21 +72,23 @@ export default () => {
     );
   }
 
-  switch (status) {
-    case requestStatuses.pending:
-      return <Preloader tip="Signing Up..." />;
-    case requestStatuses.failed:
-      return (
-        <ErrorPage
-          message={(
+  if (status === requestStatuses.failed) {
+    return (
+      <ErrorPage
+        message={(
+          <>
+            <Typography.Paragraph>
+              User with given credentials already exists!
+            </Typography.Paragraph>
             <Button onClick={() => setEditMode(true)}>
               Try again
             </Button>
-          )}
-          statusCode={statusCode}
-        />
-      );
-    default:
-      return <Redirect to="/auth/signIn" />;
+          </>
+        )}
+        statusCode={statusCode}
+      />
+    );
   }
+
+  return <Redirect to="/auth/signIn" />;
 };

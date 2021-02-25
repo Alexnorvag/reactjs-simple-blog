@@ -5,5 +5,16 @@
 
 .postTitle {
   margin-top: 22px;
-  text-align: center;
+
+  @media (min-width: 750px) {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .goBackButton {
+      position: absolute;
+      left: 0;
+    }
+  }
 }

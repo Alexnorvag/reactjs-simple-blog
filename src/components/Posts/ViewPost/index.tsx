@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import parseHtml from 'html-react-parser';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-import { Skeleton, Typography } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
-import { requestStatuses } from '../../../constants/api';
+import { Skeleton, Typography, Button } from 'antd';
+import { EditOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { selectors as postSelectors, actions } from '../store';
+import { requestStatuses } from '../../../constants/api';
+import history from '../../../constants/history';
 import ErrorPage from '../../common/ErrorPage';
 import DeletePost from '../DeletePost';
 import styles from './post.module.less';
@@ -32,6 +33,13 @@ export default () => {
       return (
         <div className="ck-content">
           <Typography.Title className={styles.postTitle}>
+            <Button
+              onClick={history.goBack}
+              icon={<ArrowLeftOutlined />}
+              className={styles.goBackButton}
+            >
+              Back
+            </Button>
             { user._id === currentUserId ? (
               <>
                 <Link to={`${id}/edit`} className={styles.editPostIcon}>

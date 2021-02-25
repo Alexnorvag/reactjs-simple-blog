@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { requestStatuses } from '../../../constants/api';
+import { AuthReducersName } from '../../../constants/reducerName';
 import { extraReducersAdapter, RequestState } from '../../../utils/reducersUtils';
 import { readFromLocalStorage } from '../../../utils/localStorageUtils';
 import { reducers, extraReducers } from './reducer';
@@ -14,8 +15,16 @@ import {
 export interface AuthState {
   signedIn: boolean;
   userName: string;
-  requestState: RequestState;
   roles: string[];
+  [AuthReducersName.signIn]: {
+    requestState: RequestState;
+  };
+  [AuthReducersName.signUp]: {
+    requestState: RequestState;
+  };
+  [AuthReducersName.signOut]: {
+    requestState: RequestState;
+  };
 }
 
 const requestInitialState: RequestState = {
@@ -27,7 +36,15 @@ const initialState: AuthState = {
   signedIn: !!readFromLocalStorage('accessToken'),
   userName: readFromLocalStorage('currentUserName') || '',
   roles: readFromLocalStorage('currentUserRoles')?.split(',') || [],
-  requestState: requestInitialState,
+  [AuthReducersName.signIn]: {
+    requestState: requestInitialState,
+  },
+  [AuthReducersName.signUp]: {
+    requestState: requestInitialState,
+  },
+  [AuthReducersName.signOut]: {
+    requestState: requestInitialState,
+  },
 };
 
 export const slice = createSlice({
@@ -41,7 +58,11 @@ export const selectors = {
   selectSignedIn: (state: RootState) => state.auth.signedIn,
   selectUserName: (state: RootState) => state.auth.userName,
   selectUserRoles: (state: RootState) => state.auth.roles,
-  selectRequestState: (state: RootState) => state.auth.requestState,
+  selectSignInRequestState: (state: RootState) => state.auth.signIn.requestState,
+  selectSignUpRequestState: (state: RootState) => state.auth.signUp.requestState,
+  selectAuthLoading: (state: RootState) => Object.values(AuthReducersName).some((
+    fieldName: AuthReducersName,
+  ) => state.auth[fieldName].requestState.status === requestStatuses.pending),
 };
 
 export const actions = {

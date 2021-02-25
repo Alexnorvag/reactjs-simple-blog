@@ -57,6 +57,12 @@ export const handleDefaultRequestStatuses = (
         ? pathSelector(reducerState)
         : reducerState;
 
+      if (!requestState) {
+        throw new Error(
+          'Default request statuses handler was incorrectly initialized, it might need to pass the correct patch selector',
+        );
+      }
+
       let statusCode: RequestStatusCodeState = null;
 
       requestState.status = status;

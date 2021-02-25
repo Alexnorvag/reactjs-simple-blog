@@ -6,6 +6,7 @@ import uploadAdapter from '../../../utils/uploadAdapter';
 import useDebounceSelector from '../../../utils/useDebouncedSelector';
 import ErrorPage from '../../common/ErrorPage';
 import Preloader from '../../common/Preloader';
+import WithGoBack from '../../common/WithGoBack';
 import Editor from '../Editor';
 
 export default () => {
@@ -24,12 +25,14 @@ export default () => {
       return <ErrorPage statusCode={statusCode} />;
     default:
       return (
-        <Editor
-          uploadAdapter={uploadAdapter(_id)}
-          onSubmit={(postData: NewPostData) => {
-            dispatch(actions.createPost({ ...postData, _id }));
-          }}
-        />
+        <WithGoBack>
+          <Editor
+            uploadAdapter={uploadAdapter(_id)}
+            onSubmit={(postData: NewPostData) => {
+              dispatch(actions.createPost({ ...postData, _id }));
+            }}
+          />
+        </WithGoBack>
       );
   }
 };

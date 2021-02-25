@@ -1,19 +1,21 @@
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Skeleton } from 'antd';
 import { selectors, actions, NewPostData } from '../store';
-import { requestStatuses } from '../../../constants/api';
+import useDebounceSelector from '../../../utils/useDebouncedSelector';
 import uploadAdapter from '../../../utils/uploadAdapter';
+import { requestStatuses } from '../../../constants/api';
 import ErrorPage from '../../common/ErrorPage';
-import styles from './editPost.module.less';
+import WithGoBack from '../../common/WithGoBack';
 import Editor from '../Editor';
+import styles from './editPost.module.less';
 
 export default () => {
   const {
     post,
     requestState: { status, statusCode },
-  } = useSelector(selectors.selectBeingEditedPost);
+  } = useDebounceSelector(selectors.selectBeingEditedPost);
   const { id } : { id: string } = useParams();
   const dispatch = useDispatch();
 
@@ -28,13 +30,15 @@ export default () => {
       return <ErrorPage statusCode={statusCode} />;
     default:
       return (
-        <Editor
-          uploadAdapter={uploadAdapter(id)}
-          initialData={post}
-          onSubmit={(updatedPostData: NewPostData) => {
-            dispatch(actions.updatePost({ id, postData: updatedPostData }));
-          }}
-        />
+        <WithGoBack>
+          <Editor
+            uploadAdapter={uploadAdapter(id)}
+            initialData={post}
+            onSubmit={(updatedPostData: NewPostData) => {
+              dispatch(actions.updatePost({ id, postData: updatedPostData }));
+            }}
+          />
+        </WithGoBack>
       );
   }
 };

@@ -4,8 +4,7 @@ import { useSelector } from 'react-redux';
 import { Button, Layout, Menu } from 'antd';
 import { HighlightOutlined } from '@ant-design/icons';
 import { selectors as authSelectors } from '../Auth/store';
-import { requestStatuses } from '../../constants/api';
-import Role from '../../constants/role.enum';
+import UserRole from '../../constants/userRole';
 import SignOut from '../Auth/SignOut';
 import styles from './header.module.less';
 
@@ -14,8 +13,7 @@ export default () => {
   const useName: string = useSelector(authSelectors.selectUserName);
   const signedIn: boolean = useSelector(authSelectors.selectSignedIn);
   const userRoles: string[] = useSelector(authSelectors.selectUserRoles);
-  const authLoading: boolean = useSelector(authSelectors.selectRequestState)
-    .status === requestStatuses.pending;
+  const authLoading: boolean = useSelector(authSelectors.selectAuthLoading);
 
   return (
     <Layout.Header className={styles.navHeader}>
@@ -32,7 +30,7 @@ export default () => {
                     Create Post
                   </Link>
                 </Menu.Item>
-                {userRoles.includes(Role.Admin) ? (
+                {userRoles.includes(UserRole.Admin) ? (
                   <Menu.Item key="/users">
                     <Link to="/users">
                       Manage Users
