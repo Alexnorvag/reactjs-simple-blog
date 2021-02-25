@@ -7,7 +7,7 @@ import {
   UserOutlined,
   EyeOutlined,
 } from '@ant-design/icons';
-import { PostData } from '../../store';
+import { PostData } from '../../store/interfaces';
 import DeletePost from '../../DeletePost';
 import styles from './postItem.module.less';
 
@@ -62,7 +62,10 @@ const PostItem = (
       )}
         title={<Link to={postLink}>{title}</Link>}
       />
-      <Typography.Paragraph ellipsis={{ rows: 3, expandable: false, symbol: 'more' }} className="ck-content">
+      <Typography.Paragraph
+        ellipsis={{ rows: 3, expandable: false, symbol: 'more' }}
+        className="ck-content"
+      >
         {parseHtml(body)}
       </Typography.Paragraph>
     </List.Item>

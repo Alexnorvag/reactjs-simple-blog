@@ -2,16 +2,18 @@
 
 import { PayloadAction } from '@reduxjs/toolkit';
 import { requestStatuses } from '../../../constants/api';
-import { ExtraReducersConfig, handleDefaultRequestStatuses, RequestState } from '../../../utils/reducersUtils';
-import { AuthReducersName } from '../../../constants/reducerName';
-import { AuthState } from './index';
+import AuthReducerName from '../../../constants/authReducerName.enum';
+import { AuthState, SignInPayload, SignUpPayload } from './interfaces';
+import {
+  ExtraReducersConfig,
+  handleDefaultRequestStatuses,
+  RequestState,
+} from '../../../utils/reducersUtils';
 import {
   signUp,
   signIn,
   signOut,
   resetAuth,
-  SignUpPayload,
-  SignInPayload,
 } from './actions';
 
 const successRequestState: RequestState = {
@@ -26,27 +28,27 @@ export const extraReducers: ExtraReducersConfig = [
   [signUp.fulfilled, (
     state: AuthState,
     { payload: { statusCode } }: PayloadAction<SignUpPayload>,
-  ) => {
-    state.signUp.requestState = {
-      statusCode,
+  ): void => {
+    state[AuthReducerName.signUp].requestState = {
       status: requestStatuses.succeeded,
+      statusCode: statusCode || null,
     };
   }],
   ...handleDefaultRequestStatuses(
     signUp,
     [requestStatuses.failed, requestStatuses.pending],
-    (authState: AuthState) => authState[AuthReducersName.signUp],
+    (authState: AuthState) => authState[AuthReducerName.signUp],
   ),
 
   // SignIn reducers
   [signIn.fulfilled, (
     state: AuthState,
     { payload: { username, roles, statusCode } }: PayloadAction<SignInPayload>,
-  ) => {
+  ): void => {
     state.signedIn = !statusCode;
     state.userName = username;
     state.roles = roles;
-    state.signIn.requestState = {
+    state[AuthReducerName.signIn].requestState = {
       status: requestStatuses.succeeded,
       statusCode: statusCode || null,
     };
@@ -54,13 +56,13 @@ export const extraReducers: ExtraReducersConfig = [
   ...handleDefaultRequestStatuses(
     signIn,
     [requestStatuses.failed, requestStatuses.pending],
-    (authState: AuthState) => authState[AuthReducersName.signIn],
+    (authState: AuthState) => authState[AuthReducerName.signIn],
   ),
 
   // SignOut reducers
-  [signOut.fulfilled, (state: AuthState) => {
+  [signOut.fulfilled, (state: AuthState): void => {
     state.signedIn = false;
-    state.signOut.requestState = successRequestState;
+    state[AuthReducerName.signOut].requestState = successRequestState;
   }],
   ...handleDefaultRequestStatuses(
     signOut,
@@ -69,10 +71,10 @@ export const extraReducers: ExtraReducersConfig = [
   ),
 
   // Reset auth reducer
-  [resetAuth.type, (state: AuthState) => {
+  [resetAuth.type, (state: AuthState): void => {
     state.userName = '';
     state.signedIn = false;
-    state[AuthReducersName.signOut].requestState = successRequestState;
-    state[AuthReducersName.signIn].requestState = successRequestState;
+    state[AuthReducerName.signOut].requestState = successRequestState;
+    state[AuthReducerName.signIn].requestState = successRequestState;
   }],
 ];

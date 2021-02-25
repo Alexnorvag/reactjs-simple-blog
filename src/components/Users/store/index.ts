@@ -1,21 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { requestStatuses } from '../../../constants/api';
-import { extraReducersAdapter, RequestState } from '../../../utils/reducersUtils';
+import { extraReducersAdapter } from '../../../utils/reducersUtils';
 import { reducers, extraReducers } from './reducer';
 import { fetchUsers, deleteUser } from './actions';
 import { RootState } from '../../../store';
-
-export interface UserData {
-  _id: string;
-  username: string;
-  posts: string[];
-}
-
-export interface UsersState {
-  users: UserData[];
-  total: number;
-  requestState: RequestState;
-}
+import { UsersState } from './interfaces';
 
 const initialState: UsersState = {
   users: [],

@@ -1,8 +1,13 @@
 /* eslint-disable no-param-reassign */
 
 import { PayloadAction } from '@reduxjs/toolkit';
-import { PostData, PostsState } from './index';
 import { requestStatuses } from '../../../constants/api';
+import {
+  PostData,
+  PostsState,
+  FetchPostsPayload,
+  DeletePostPayload,
+} from './interfaces';
 import {
   handleDefaultRequestStatuses,
   ExtraReducersConfig,
@@ -36,8 +41,8 @@ export const extraReducers: ExtraReducersConfig = [
   // Retrieve posts list reducers
   [fetchPosts.fulfilled, (
     { postsList }: PostsState,
-    { payload }: PayloadAction<{ posts: PostData[], total: number }>,
-  ) => {
+    { payload }: PayloadAction<FetchPostsPayload>,
+  ): void => {
     postsList.posts = payload.posts;
     postsList.total = payload.total;
     postsList.requestState = successRequestState;
@@ -52,7 +57,7 @@ export const extraReducers: ExtraReducersConfig = [
   [fetchPost.fulfilled, (
     { currentlyViewedPost }: PostsState,
     { payload }: PayloadAction<PostData>,
-  ) => {
+  ): void => {
     currentlyViewedPost.post = payload;
     currentlyViewedPost.requestState = successRequestState;
   }],
@@ -66,7 +71,7 @@ export const extraReducers: ExtraReducersConfig = [
   [fetchBeingEditedPost.fulfilled, (
     { beingEditedPost }: PostsState,
     { payload }: PayloadAction<PostData>,
-  ) => {
+  ): void => {
     beingEditedPost.post = payload;
     beingEditedPost.requestState = successRequestState;
   }],
@@ -86,8 +91,8 @@ export const extraReducers: ExtraReducersConfig = [
   // Delete post reducer
   [deletePost.fulfilled, (
     { postsList }: PostsState,
-    { payload: { id } }: PayloadAction<{ id: string }>,
-  ) => {
+    { payload: { id } }: PayloadAction<DeletePostPayload>,
+  ): void => {
     postsList.total -= 1;
     postsList.posts = postsList.posts.filter(({ _id }) => _id !== id);
   }],
@@ -96,7 +101,7 @@ export const extraReducers: ExtraReducersConfig = [
   [fetchNewPostId.fulfilled, (
     { newPost }: PostsState,
     { payload }: PayloadAction<string>,
-  ) => {
+  ): void => {
     newPost._id = payload;
     newPost.requestState = successRequestState;
   }],

@@ -3,7 +3,7 @@ import { Button, Input, Typography } from 'antd';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { UploadAdapterType } from '../../../utils/uploadAdapter';
-import { NewPostData } from '../store';
+import { NewPostData } from '../store/interfaces';
 import styles from './editor.module.less';
 import './ckeditor.override.css';
 

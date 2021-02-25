@@ -9,12 +9,12 @@ import {
   Typography,
 } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { requestStatusCodes, requestStatuses } from '../../../constants/api';
+import { AuthCredentials } from '../store/interfaces';
 import { selectors, actions } from '../store';
-import { AuthCredentials } from '../store/actions';
-import { requestStatuses } from '../../../constants/api';
 import ErrorPage from '../../common/ErrorPage';
-import styles from './signIn.module.less';
 import Preloader from '../../common/Preloader';
+import styles from './signIn.module.less';
 
 export default ({ location }: { location: Location<string> }) => {
   const { status, statusCode } = useSelector(selectors.selectSignInRequestState);
@@ -27,7 +27,11 @@ export default ({ location }: { location: Location<string> }) => {
   };
 
   if (!isSignedIn) {
-    if (status === requestStatuses.succeeded || isPending || statusCode === 400) {
+    if (
+      status === requestStatuses.succeeded
+      || isPending
+      || statusCode === requestStatusCodes.badRequest
+    ) {
       return (
         <div className={styles.formWrapper}>
           {isPending ? (
@@ -76,9 +80,12 @@ export default ({ location }: { location: Location<string> }) => {
     return (
       <ErrorPage
         message={(
-          <Button onClick={() => dispatch(actions.resetAuth())}>
-            Try again
-          </Button>
+          <>
+            <Typography.Paragraph>Something went wrong...</Typography.Paragraph>
+            <Button onClick={() => dispatch(actions.resetAuth())}>
+              Try again
+            </Button>
+          </>
         )}
         statusCode={statusCode}
       />

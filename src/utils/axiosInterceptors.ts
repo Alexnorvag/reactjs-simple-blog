@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { apiUrl } from '../constants/api';
 import { readFromLocalStorage, writeToLocalStorage } from './localStorageUtils';
+import { buildErrorMessage } from './axiosErrorsUtils';
 import { actions } from '../components/Auth/store';
 import { store } from '../store';
+import apiRoutes from '../constants/apiRoutes';
 
 /**
  * Sends request with refreshToken to the server API to retrieve the access token
@@ -15,10 +16,7 @@ const refreshAccessToken = async (): Promise<string|never> => {
     throw new Error('"refreshToken" is not set!');
   }
 
-  const response = await axios.post(
-    `${apiUrl}/auth/refreshToken`,
-    { refreshToken },
-  );
+  const response = await axios.post(apiRoutes.refreshToken, { refreshToken });
   const { accessToken } = response.data;
 
   writeToLocalStorage('accessToken', accessToken);
@@ -46,7 +44,7 @@ export default () => {
           store.dispatch(actions.resetAuth());
         }
       } else {
-        throw new Error(`${statusCode} ${message}`);
+        throw new Error(buildErrorMessage(statusCode, message));
       }
     }
 

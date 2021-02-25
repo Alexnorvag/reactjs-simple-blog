@@ -2,8 +2,13 @@ import React from 'react';
 import { Result } from 'antd';
 import { RequestStatusCodeState } from '../../../utils/reducersUtils';
 import styles from './errorPage.module.less';
+import { requestStatusCodes } from '../../../constants/api';
 
-const allowedStatusCodes = [404, 403, 500] as const;
+const allowedStatusCodes = [
+  requestStatusCodes.notFound,
+  requestStatusCodes.forbidden,
+  requestStatusCodes.serverError,
+] as const;
 const acceptableStatusCodes = ([...allowedStatusCodes] as (number|null|undefined)[]);
 
 type AllowedStatusCode = typeof allowedStatusCodes[number];

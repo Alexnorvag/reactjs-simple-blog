@@ -1,22 +1,20 @@
-export const apiUrl = 'http://localhost:5000';
-export const resourceUploadRoute = 'resources';
-export const uploadsRoute = 'uploads';
-
 export const requestStatuses = {
   pending: 'pending',
   succeeded: 'succeeded',
   failed: 'failed',
 } as const;
 
+export type RequestStatus = typeof requestStatuses[keyof typeof requestStatuses];
+
 export const requestStatusCodes = {
   badRequest: 400,
   unauthorized: 401,
   notFound: 404,
   forbidden: 403,
+  conflict: 409,
   serverError: 500,
 } as const;
 
-export type RequestStatus = typeof requestStatuses[keyof typeof requestStatuses];
 export type RequestStatusCode = typeof requestStatusCodes[keyof typeof requestStatusCodes];
 
 export const statusesToThunkMapping: { [key in RequestStatus]: string } = {

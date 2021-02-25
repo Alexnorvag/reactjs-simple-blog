@@ -2,14 +2,15 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Table, Typography } from 'antd';
-import { selectors as userSelectors, actions, UserData } from './store';
+import { selectors as userSelectors, actions } from './store';
 import { requestStatuses, usersDefaultSearchParams } from '../../constants/api';
 import { updateSearch } from '../../utils/browserHistoryUtils';
-import Search from '../common/Search';
+import { UserData } from './store/interfaces';
+import ErrorPage from '../common/ErrorPage';
 import Sorting from '../common/Sorting';
+import Search from '../common/Search';
 import Delete from '../common/Delete';
 import styles from './usersTable.module.less';
-import ErrorPage from '../common/ErrorPage';
 
 const { pageSize } = usersDefaultSearchParams;
 

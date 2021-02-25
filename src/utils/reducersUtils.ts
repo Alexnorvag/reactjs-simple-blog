@@ -8,6 +8,7 @@ import {
   RequestStatusCode,
   requestStatusCodes,
 } from '../constants/api';
+import { getStatusCode } from './axiosErrorsUtils';
 
 const statusCodes: RequestStatusCode[] = Object.values(requestStatusCodes);
 
@@ -68,7 +69,7 @@ export const handleDefaultRequestStatuses = (
       requestState.status = status;
 
       if (error) {
-        const requestStatus: number = parseInt(error.message, 10);
+        const requestStatus: number = getStatusCode(error);
 
         if (!Number.isNaN(requestStatus) && (statusCodes as number[]).includes(requestStatus)) {
           statusCode = requestStatus as RequestStatusCode;

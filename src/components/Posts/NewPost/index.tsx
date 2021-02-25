@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectors, actions, NewPostData } from '../store';
 import { requestStatuses } from '../../../constants/api';
-import uploadAdapter from '../../../utils/uploadAdapter';
 import useDebounceSelector from '../../../utils/useDebouncedSelector';
+import uploadAdapter from '../../../utils/uploadAdapter';
+import { NewPostData } from '../store/interfaces';
+import { selectors, actions } from '../store';
 import ErrorPage from '../../common/ErrorPage';
 import Preloader from '../../common/Preloader';
 import WithGoBack from '../../common/WithGoBack';
@@ -25,7 +26,7 @@ export default () => {
       return <ErrorPage statusCode={statusCode} />;
     default:
       return (
-        <WithGoBack>
+        <WithGoBack path="/">
           <Editor
             uploadAdapter={uploadAdapter(_id)}
             onSubmit={(postData: NewPostData) => {

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
+import apiRoutes from '../constants/apiRoutes';
 import { getAccessToken } from './localStorageUtils';
-import { apiUrl, resourceUploadRoute, uploadsRoute } from '../constants/api';
 
 class UploadAdapter {
   private readonly loader: any;
@@ -24,12 +24,12 @@ class UploadAdapter {
     formData.append('postId', postId);
 
     const { data: { filename } }: AxiosResponse<{ filename: string }> = await axios.post(
-      `${apiUrl}/${resourceUploadRoute}`,
+      apiRoutes.resourceUpload,
       formData,
       { headers: { Authorization: getAccessToken() } },
     );
 
-    return { default: `${apiUrl}/${uploadsRoute}/${filename}` };
+    return { default: apiRoutes.uploads(filename) };
   }
 }
 

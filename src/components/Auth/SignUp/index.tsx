@@ -8,12 +8,12 @@ import {
   Typography,
 } from 'antd';
 import { UserAddOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
+import { requestStatusCodes, requestStatuses } from '../../../constants/api';
+import { AuthCredentials } from '../store/interfaces';
 import { selectors, actions } from '../store';
-import { AuthCredentials } from '../store/actions';
-import { requestStatuses } from '../../../constants/api';
 import ErrorPage from '../../common/ErrorPage';
-import styles from './signUp.module.less';
 import Preloader from '../../common/Preloader';
+import styles from './signUp.module.less';
 
 export default () => {
   const { status, statusCode } = useSelector(selectors.selectSignUpRequestState);
@@ -26,7 +26,11 @@ export default () => {
     setEditMode(false);
   };
 
-  if (editMode || isPending || statusCode === 400) {
+  if (
+    editMode
+    || isPending
+    || statusCode === requestStatusCodes.badRequest
+  ) {
     return (
       <div className={styles.formWrapper}>
         {isPending ? (
@@ -78,7 +82,11 @@ export default () => {
         message={(
           <>
             <Typography.Paragraph>
-              User with given credentials already exists!
+              {
+                statusCode === requestStatusCodes.conflict
+                  ? 'User with given credentials already exists!'
+                  : 'Something went wrong...'
+              }
             </Typography.Paragraph>
             <Button onClick={() => setEditMode(true)}>
               Try again

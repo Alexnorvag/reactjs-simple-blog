@@ -1,63 +1,58 @@
 import axios from 'axios';
 import { createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import { message } from 'antd';
-import { apiUrl, RequestStatusCode } from '../../../constants/api';
+import { getErrorMessage, getStatusCode } from '../../../utils/axiosErrorsUtils';
+import { RequestStatusCode, requestStatusCodes } from '../../../constants/api';
+import apiRoutes from '../../../constants/apiRoutes';
 import {
   clearLocalStorage,
   getAccessToken,
   writeToLocalStorage,
 } from '../../../utils/localStorageUtils';
-import { RequestStatusCodeState } from '../../../utils/reducersUtils';
+import {
+  AuthCredentials,
+  SignInPayload,
+  SignUpPayload,
+  WithRequestStatusCode,
+} from './interfaces';
 
-export interface AuthCredentials {
-  username: string;
-  password: string;
-}
+const processAuthError = <C extends RequestStatusCode, S extends WithRequestStatusCode>(
+  error: Error,
+  errorsToBeHandled: Array<C>,
+  payload: S,
+) => {
+  const statusCode: number = getStatusCode(error);
 
-export interface SignUpPayload {
-  statusCode: RequestStatusCodeState;
-}
+  // REVIEW: Actions creators isn't the best place to perform side effects
+  // It is would be better to move side effects to middleware or somewhere else
+  if (([...errorsToBeHandled] as number[]).includes(statusCode)) {
+    message.warn(getErrorMessage(error));
+
+    // eslint-disable-next-line no-param-reassign
+    payload.statusCode = statusCode as typeof errorsToBeHandled[number];
+  } else {
+    throw new Error(error.message);
+  }
+};
 
 export const signUp = createAsyncThunk(
   'auth/signUp',
   async (authCredentials: AuthCredentials): Promise<SignUpPayload> => {
-    const payload: SignUpPayload = { statusCode: null };
+    const payload: SignUpPayload = {};
 
     try {
-      await axios.post(
-        `${apiUrl}/auth/signUp`,
-        authCredentials,
-      );
+      await axios.post(apiRoutes.signUp, authCredentials);
     } catch (error) {
-      const errorMessage = error.message;
-      const statusCode: number = parseInt(errorMessage, 10);
-
-      // REVIEW: Actions creators isn't the best place to perform side effects
-      // It is would be better to move side effects to middleware or somewhere else
-      if (statusCode === 400) {
-        message.warn(errorMessage.replace(/^\d+\s/, ''));
-
-        payload.statusCode = statusCode;
-      } else {
-        throw new Error(errorMessage);
-      }
+      processAuthError(error, [requestStatusCodes.badRequest], payload);
     }
 
     return payload;
   },
 );
 
-export interface SignInPayload {
-  username: string;
-  roles: string[];
-  statusCode?: RequestStatusCode;
-}
-
 export const signIn = createAsyncThunk(
   'auth/signIn',
-  async (
-    authCredentials: AuthCredentials,
-  ): Promise<SignInPayload> => {
+  async (authCredentials: AuthCredentials): Promise<SignInPayload> => {
     const payload: SignInPayload = {
       username: '',
       roles: [],
@@ -72,7 +67,7 @@ export const signIn = createAsyncThunk(
           _id,
           roles,
         },
-      } = await axios.post(`${apiUrl}/auth/signIn`, authCredentials);
+      } = await axios.post(apiRoutes.signIn, authCredentials);
 
       // REVIEW: Actions creators isn't the best place to perform side effects
       // It is would be better to move side effects to middleware or somewhere else
@@ -87,19 +82,11 @@ export const signIn = createAsyncThunk(
       payload.username = username;
       payload.roles = roles;
     } catch (error) {
-      const errorMessage = error.message;
-      const statusCode: number = parseInt(errorMessage, 10);
-      const errorsToBeHandled = [400, 401] as const;
-
-      // REVIEW: Actions creators isn't the best place to perform side effects
-      // It is would be better to move side effects to middleware or somewhere else
-      if (([...errorsToBeHandled] as number[]).includes(statusCode)) {
-        message.warn(errorMessage.replace(/^\d+\s/, ''));
-
-        payload.statusCode = statusCode as typeof errorsToBeHandled[number];
-      } else {
-        throw new Error(errorMessage);
-      }
+      processAuthError(
+        error,
+        [requestStatusCodes.badRequest, requestStatusCodes.unauthorized],
+        payload,
+      );
     }
 
     return payload;
@@ -110,7 +97,7 @@ export const signOut = createAsyncThunk(
   'auth/signOut',
   async (): Promise<void> => {
     await axios.post(
-      `${apiUrl}/auth/signOut`,
+      apiRoutes.signOut,
       null,
       { headers: { Authorization: getAccessToken() } },
     );

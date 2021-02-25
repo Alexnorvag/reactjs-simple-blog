@@ -1,31 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { requestStatuses } from '../../../constants/api';
-import { AuthReducersName } from '../../../constants/reducerName';
+import AuthReducerName from '../../../constants/authReducerName.enum';
 import { extraReducersAdapter, RequestState } from '../../../utils/reducersUtils';
 import { readFromLocalStorage } from '../../../utils/localStorageUtils';
 import { reducers, extraReducers } from './reducer';
 import { RootState } from '../../../store';
+import { AuthState } from './interfaces';
 import {
   signUp,
   signIn,
   signOut,
   resetAuth,
 } from './actions';
-
-export interface AuthState {
-  signedIn: boolean;
-  userName: string;
-  roles: string[];
-  [AuthReducersName.signIn]: {
-    requestState: RequestState;
-  };
-  [AuthReducersName.signUp]: {
-    requestState: RequestState;
-  };
-  [AuthReducersName.signOut]: {
-    requestState: RequestState;
-  };
-}
 
 const requestInitialState: RequestState = {
   status: requestStatuses.succeeded,
@@ -36,13 +22,13 @@ const initialState: AuthState = {
   signedIn: !!readFromLocalStorage('accessToken'),
   userName: readFromLocalStorage('currentUserName') || '',
   roles: readFromLocalStorage('currentUserRoles')?.split(',') || [],
-  [AuthReducersName.signIn]: {
+  [AuthReducerName.signIn]: {
     requestState: requestInitialState,
   },
-  [AuthReducersName.signUp]: {
+  [AuthReducerName.signUp]: {
     requestState: requestInitialState,
   },
-  [AuthReducersName.signOut]: {
+  [AuthReducerName.signOut]: {
     requestState: requestInitialState,
   },
 };
@@ -60,8 +46,8 @@ export const selectors = {
   selectUserRoles: (state: RootState) => state.auth.roles,
   selectSignInRequestState: (state: RootState) => state.auth.signIn.requestState,
   selectSignUpRequestState: (state: RootState) => state.auth.signUp.requestState,
-  selectAuthLoading: (state: RootState) => Object.values(AuthReducersName).some((
-    fieldName: AuthReducersName,
+  selectAuthLoading: (state: RootState) => Object.values(AuthReducerName).some((
+    fieldName: AuthReducerName,
   ) => state.auth[fieldName].requestState.status === requestStatuses.pending),
 };
 

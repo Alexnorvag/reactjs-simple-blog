@@ -2,9 +2,17 @@
 
 import { PayloadAction } from '@reduxjs/toolkit';
 import { requestStatuses } from '../../../constants/api';
-import { handleDefaultRequestStatuses, ExtraReducersConfig, RequestState } from '../../../utils/reducersUtils';
 import { fetchUsers, deleteUser } from './actions';
-import { UserData, UsersState } from './index';
+import {
+  UsersState,
+  FetchUsersPayload,
+  DeleteUserPayload,
+} from './interfaces';
+import {
+  handleDefaultRequestStatuses,
+  ExtraReducersConfig,
+  RequestState,
+} from '../../../utils/reducersUtils';
 
 const successRequestState: RequestState = {
   status: requestStatuses.succeeded,
@@ -17,8 +25,8 @@ export const extraReducers: ExtraReducersConfig = [
   // Retrieve users list reducers
   [fetchUsers.fulfilled, (
     state: UsersState,
-    action: PayloadAction<{ users: UserData[], total: number }>,
-  ) => {
+    action: PayloadAction<FetchUsersPayload>,
+  ): void => {
     const { payload } = action;
 
     state.users = payload.users;
@@ -32,8 +40,8 @@ export const extraReducers: ExtraReducersConfig = [
   // Delete user reducers
   [deleteUser.fulfilled, (
     state: UsersState,
-    { payload: { id } }: PayloadAction<{ id: string }>,
-  ) => {
+    { payload: { id } }: PayloadAction<DeleteUserPayload>,
+  ): void => {
     state.total -= 1;
     state.users = state.users.filter(({ _id }) => _id !== id);
     state.requestState = successRequestState;

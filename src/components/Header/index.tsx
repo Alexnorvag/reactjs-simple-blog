@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { Button, Layout, Menu } from 'antd';
 import { HighlightOutlined } from '@ant-design/icons';
 import { selectors as authSelectors } from '../Auth/store';
-import UserRole from '../../constants/userRole';
+import UserRole from '../../constants/userRole.enum';
 import SignOut from '../Auth/SignOut';
 import styles from './header.module.less';
 

@@ -1,17 +1,32 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { message } from 'antd';
-import { NewPostData } from './index';
 import { getAccessToken } from '../../../utils/localStorageUtils';
 import { buildQueryString } from '../../../utils/queryStringUtils';
-import { apiUrl, postsDefaultSearchParams } from '../../../constants/api';
+import { postsDefaultSearchParams } from '../../../constants/api';
+import apiRoutes from '../../../constants/apiRoutes';
 import history from '../../../constants/history';
+import {
+  PostData,
+  NewPostData,
+  FetchPostsPayload,
+  DeletePostPayload,
+} from './interfaces';
+
+const fetchPostPayloadCreator = async (id: string): Promise<PostData> => {
+  const { data } = await axios.get(
+    apiRoutes.fetchPostById(id),
+    { headers: { Authorization: getAccessToken() } },
+  );
+
+  return data;
+};
 
 export const createPost = createAsyncThunk(
   'posts/create',
-  async (postData: NewPostData) => {
+  async (postData: NewPostData): Promise<void> => {
     const { data } = await axios.post(
-      `${apiUrl}/posts`,
+      apiRoutes.createPost,
       postData,
       { headers: { Authorization: getAccessToken() } },
     );
@@ -20,19 +35,8 @@ export const createPost = createAsyncThunk(
     // It is would be better to move side effects to middleware or somewhere else
     message.success(`Post "${data.title}" successfully created!`);
     history.push(`/post/${data._id}`);
-
-    return data;
   },
 );
-
-const fetchPostPayloadCreator = async (id: string) => {
-  const { data } = await axios.get(
-    `${apiUrl}/posts/${id}`,
-    { headers: { Authorization: getAccessToken() } },
-  );
-
-  return data;
-};
 
 export const fetchPost = createAsyncThunk(
   'posts/fetchById',
@@ -46,9 +50,9 @@ export const fetchBeingEditedPost = createAsyncThunk(
 
 export const fetchPosts = createAsyncThunk(
   'posts/fetchAll',
-  async (query: string) => {
+  async (query: string): Promise<FetchPostsPayload> => {
     const { data } = await axios.get(
-      `${apiUrl}/posts${buildQueryString(postsDefaultSearchParams, query, true)}`,
+      `${apiRoutes.fetchPosts}${buildQueryString(postsDefaultSearchParams, query, true)}`,
       { headers: { Authorization: getAccessToken() } },
     );
 
@@ -58,9 +62,17 @@ export const fetchPosts = createAsyncThunk(
 
 export const updatePost = createAsyncThunk(
   'posts/update',
-  async ({ id, postData }: { id: string, postData: NewPostData }) => {
-    const { data } = await axios.patch(
-      `${apiUrl}/posts/${id}`,
+  async (
+    {
+      id,
+      postData,
+    }: {
+      id: string,
+      postData: NewPostData,
+    },
+  ): Promise<void> => {
+    const { data: { _id } } = await axios.patch(
+      apiRoutes.updatePostById(id),
       postData,
       { headers: { Authorization: getAccessToken() } },
     );
@@ -68,18 +80,16 @@ export const updatePost = createAsyncThunk(
     // REVIEW: Actions creators isn't the best place to perform side effects
     // It is would be better to move side effects to middleware or somewhere else
     message.success('Post successfully updated!');
-    history.push(`/post/${data._id}`);
-
-    return data;
+    history.push(`/post/${_id}`);
   },
 );
 
 export const deletePost = createAsyncThunk(
   'posts/delete',
-  async (id: string): Promise<{ id: string }> => {
+  async (id: string): Promise<DeletePostPayload> => {
     try {
       await axios.delete(
-        `${apiUrl}/posts/${id}`,
+        apiRoutes.deletePostById(id),
         { headers: { Authorization: getAccessToken() } },
       );
     } catch (e) {
@@ -104,7 +114,7 @@ export const fetchNewPostId = createAsyncThunk(
   'posts/newId',
   async (): Promise<string> => {
     const { data } = await axios.get(
-      `${apiUrl}/posts/newId`,
+      apiRoutes.fetchNewPostId,
       { headers: { Authorization: getAccessToken() } },
     );
 

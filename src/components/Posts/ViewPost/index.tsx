@@ -34,7 +34,7 @@ export default () => {
         <div className="ck-content">
           <Typography.Title className={styles.postTitle}>
             <Button
-              onClick={history.goBack}
+              onClick={() => history.push('/')}
               icon={<ArrowLeftOutlined />}
               className={styles.goBackButton}
             >
