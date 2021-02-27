@@ -20,6 +20,8 @@ export default () => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
+  const redirectToMain = () => history.push('/');
+
   useEffect(() => {
     dispatch(actions.fetchPost(id));
   }, []);
@@ -34,7 +36,7 @@ export default () => {
         <div className="ck-content">
           <Typography.Title className={styles.postTitle}>
             <Button
-              onClick={() => history.push('/')}
+              onClick={redirectToMain}
               icon={<ArrowLeftOutlined />}
               className={styles.goBackButton}
             >
@@ -45,7 +47,11 @@ export default () => {
                 <Link to={`${id}/edit`} className={styles.editPostIcon}>
                   <EditOutlined />
                 </Link>
-                <DeletePost id={id} className={styles.editPostIcon} />
+                <DeletePost
+                  id={id}
+                  className={styles.editPostIcon}
+                  onDelete={redirectToMain}
+                />
               </>
             ) : null }
             {title}

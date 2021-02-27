@@ -4,13 +4,25 @@ import { actions } from '../store';
 import Delete from '../../common/Delete';
 
 const DeletePost = (
-  { id, className } : { id: string, className?: string },
+  {
+    id,
+    className,
+    onDelete,
+  } : {
+    id: string,
+    className?: string,
+    onDelete?: () => void,
+  },
 ) => {
   const dispatch = useDispatch();
 
   return (
     <Delete
-      onConfirm={() => dispatch(actions.deletePost(id))}
+      onConfirm={async () => {
+        await dispatch(actions.deletePost(id));
+
+        if (onDelete) onDelete();
+      }}
       entityName="post"
       className={className}
     />
@@ -19,6 +31,7 @@ const DeletePost = (
 
 DeletePost.defaultProps = {
   className: undefined,
+  onDelete: undefined,
 };
 
 export default DeletePost;
