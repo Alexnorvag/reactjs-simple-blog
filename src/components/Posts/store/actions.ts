@@ -109,15 +109,3 @@ export const deletePost = createAsyncThunk(
     return { id };
   },
 );
-
-export const fetchNewPostId = createAsyncThunk(
-  'posts/newId',
-  async (): Promise<string> => {
-    const { data } = await axios.get(
-      apiRoutes.fetchNewPostId,
-      { headers: { Authorization: getAccessToken() } },
-    );
-
-    return data;
-  },
-);

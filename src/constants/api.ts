@@ -29,10 +29,10 @@ const paginationDefaultSearchParams = {
 
 export const postsDefaultSearchParams = {
   ...paginationDefaultSearchParams,
-  pageSize: 3,
+  pageSize: 5,
 };
 
 export const usersDefaultSearchParams = {
   ...paginationDefaultSearchParams,
-  pageSize: 7,
+  pageSize: 14,
 };

@@ -8,7 +8,7 @@ export interface PostData {
   user: Omit<UserData, 'posts'>;
 }
 
-export type NewPostData = Omit<PostData, '_id' | 'user'> & { _id?: string };
+export type NewPostData = Omit<PostData, '_id' | 'user'> & { resources?: string[] };
 
 interface PostState {
   post: PostData,
@@ -18,10 +18,7 @@ interface PostState {
 export interface PostsState {
   beingEditedPost: PostState;
   currentlyViewedPost: PostState;
-  newPost: {
-    _id: string,
-    requestState: RequestState;
-  };
+  newPost: { requestState: RequestState };
   postsList: {
     posts: PostData[],
     total: number;

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { requestStatuses } from '../../../constants/api';
 import useDebounceSelector from '../../../utils/useDebouncedSelector';
 import uploadAdapter from '../../../utils/uploadAdapter';
@@ -11,13 +11,11 @@ import WithGoBack from '../../common/WithGoBack';
 import Editor from '../Editor';
 
 export default () => {
-  const { status, statusCode } = useDebounceSelector(selectors.selectCreatedPostRequestState);
-  const _id: string = useSelector(selectors.selectNewPostId);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(actions.fetchNewPostId());
-  }, []);
+  const [resources, setResources] = useState([] as string[]);
+  const { status, statusCode } = useDebounceSelector(
+    selectors.selectCreatedPostRequestState,
+  );
 
   switch (status) {
     case requestStatuses.pending:
@@ -28,9 +26,13 @@ export default () => {
       return (
         <WithGoBack path="/">
           <Editor
-            uploadAdapter={uploadAdapter(_id)}
+            uploadAdapter={uploadAdapter(
+              (postId: string) => {
+                setResources((oldArray: string[]) => [...oldArray, postId]);
+              },
+            )}
             onSubmit={(postData: NewPostData) => {
-              dispatch(actions.createPost({ ...postData, _id }));
+              dispatch(actions.createPost({ ...postData, resources }));
             }}
           />
         </WithGoBack>

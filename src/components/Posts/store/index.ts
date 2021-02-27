@@ -6,7 +6,6 @@ import { RootState } from '../../../store';
 import { PostData, PostsState } from './interfaces';
 import {
   createPost,
-  fetchNewPostId,
   updatePost,
   fetchPost,
   fetchBeingEditedPost,
@@ -39,8 +38,10 @@ const initialState: PostsState = {
     requestState: requestInitialState,
   },
   newPost: {
-    _id: '',
-    requestState: requestInitialState,
+    requestState: {
+      status: requestStatuses.succeeded,
+      statusCode: null,
+    },
   },
   postsList: {
     posts: [],
@@ -59,7 +60,6 @@ export const slice = createSlice({
 export const selectors = {
   selectCurrentlyViewedPost: (state: RootState) => state.posts.currentlyViewedPost,
   selectCreatedPostRequestState: (state: RootState) => state.posts.newPost.requestState,
-  selectNewPostId: (state: RootState) => state.posts.newPost._id,
   selectBeingEditedPost: (state: RootState) => state.posts.beingEditedPost,
   selectPostsList: (state: RootState) => state.posts.postsList,
 };
@@ -67,7 +67,6 @@ export const selectors = {
 export const actions = {
   ...slice.actions,
   createPost,
-  fetchNewPostId,
   fetchPost,
   fetchBeingEditedPost,
   fetchPosts,

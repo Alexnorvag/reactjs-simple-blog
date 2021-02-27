@@ -20,7 +20,6 @@ import {
   fetchBeingEditedPost,
   updatePost,
   deletePost,
-  fetchNewPostId,
 } from './actions';
 
 const successRequestState: RequestState = {
@@ -96,18 +95,4 @@ export const extraReducers: ExtraReducersConfig = [
     postsList.total -= 1;
     postsList.posts = postsList.posts.filter(({ _id }) => _id !== id);
   }],
-
-  // Fetch new post id
-  [fetchNewPostId.fulfilled, (
-    { newPost }: PostsState,
-    { payload }: PayloadAction<string>,
-  ): void => {
-    newPost._id = payload;
-    newPost.requestState = successRequestState;
-  }],
-  ...handleDefaultRequestStatuses(
-    fetchNewPostId,
-    [requestStatuses.failed, requestStatuses.pending],
-    ({ newPost }: PostsState) => newPost,
-  ),
 ];

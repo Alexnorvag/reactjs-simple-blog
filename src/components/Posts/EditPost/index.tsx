@@ -18,6 +18,7 @@ export default () => {
     requestState: { status, statusCode },
   } = useDebounceSelector(selectors.selectBeingEditedPost);
   const { id } : { id: string } = useParams();
+  const resources: string[] = [];
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -33,10 +34,15 @@ export default () => {
       return (
         <WithGoBack>
           <Editor
-            uploadAdapter={uploadAdapter(id)}
             initialData={post}
+            uploadAdapter={uploadAdapter(
+              (postId: string) => resources.push(postId),
+            )}
             onSubmit={(updatedPostData: NewPostData) => {
-              dispatch(actions.updatePost({ id, postData: updatedPostData }));
+              dispatch(actions.updatePost({
+                id,
+                postData: { ...updatedPostData, resources },
+              }));
             }}
           />
         </WithGoBack>
