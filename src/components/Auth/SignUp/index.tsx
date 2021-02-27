@@ -9,6 +9,7 @@ import {
 } from 'antd';
 import { UserAddOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
 import { requestStatusCodes, requestStatuses } from '../../../constants/api';
+import userCredentials from '../../../constants/userCredentials';
 import { AuthCredentials } from '../store/interfaces';
 import { selectors, actions } from '../store';
 import ErrorPage from '../../common/ErrorPage';
@@ -49,13 +50,43 @@ export default () => {
           </Typography.Paragraph>
           <Form.Item
             name="username"
-            rules={[{ required: true, message: 'Please input your Username!' }]}
+            rules={[
+              {
+                required: true,
+                message: 'Please input your Username!',
+              },
+              {
+                message: 'Too short...',
+                min: userCredentials.username.minLength,
+              },
+              {
+                message: 'Too long...',
+                max: userCredentials.username.maxLength,
+              },
+            ]}
           >
             <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ required: true, message: 'Please input your Password!' }]}
+            rules={[
+              {
+                required: true,
+                message: 'Please input your Password!',
+              },
+              {
+                message: 'Too weak!',
+                pattern: userCredentials.password.pattern,
+              },
+              {
+                message: 'Too short...',
+                min: userCredentials.password.minLength,
+              },
+              {
+                message: 'Too long...',
+                max: userCredentials.password.maxLength,
+              },
+            ]}
           >
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
