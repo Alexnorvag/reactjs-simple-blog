@@ -5,7 +5,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { UploadAdapterType } from '../../../utils/uploadAdapter';
 import { NewPostData } from '../store/interfaces';
 import styles from './editor.module.less';
-import './ckeditor.override.css';
+import './ckeditor.override.less';
 
 interface EditorProps {
   onSubmit: (postData: NewPostData) => any;
