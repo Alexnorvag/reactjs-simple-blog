@@ -1,3 +1,9 @@
+## Important notes
+
+**Before using code from this repository, please take into account this application was built just to test some technologies on the real app, and it is not an example of the best practices and there was no sense to use redux in this application.**
+
+Also, if you want to launch this application you can use a [backend application built with NestJS and MongoDB](https://github.com/YarosJ/nestjs-simple-blog) or write your own.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
 
 ## Available Scripts
@@ -21,6 +27,8 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 
 Builds the app for production to the `build` folder.<br />
 It correctly bundles React in production mode and optimizes the build for the best performance.
+
+**_If you want to change the API URL, you can do it in the `src/constants/apiRoutes.ts`_**
 
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
