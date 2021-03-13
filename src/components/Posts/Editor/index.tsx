@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button, Input, Typography } from 'antd';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
@@ -17,18 +17,17 @@ interface DefaultProps extends EditorProps {
   initialData: NewPostData,
 }
 
-let editor: any;
-
 const Editor = ({
   onSubmit,
   initialData,
   uploadAdapter,
 }: DefaultProps) => {
+  const editorRef = useRef<any>();
   const [title, setTitle] = useState(initialData.title);
   const [isEditorReady, setEditorReady] = useState(false);
 
   const onEditorSubmit = () => {
-    onSubmit({ title, body: editor.getData() });
+    onSubmit({ title, body: editorRef.current.getData() });
   };
 
   return (
@@ -62,8 +61,8 @@ const Editor = ({
         }}
         data={initialData.body}
         disabled={!isEditorReady}
-        onReady={(ckEditor: any) => {
-          editor = ckEditor;
+        onReady={(editor: any) => {
+          editorRef.current = editor;
 
           setEditorReady(true);
         }}
