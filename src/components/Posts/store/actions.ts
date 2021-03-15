@@ -31,8 +31,6 @@ export const createPost = createAsyncThunk(
       { headers: { Authorization: getAccessToken() } },
     );
 
-    // REVIEW: Actions creators isn't the best place to perform side effects
-    // It is would be better to move side effects to middleware or somewhere else
     message.success(`Post "${data.title}" successfully created!`);
     history.push(`/post/${data._id}`);
   },
@@ -77,8 +75,6 @@ export const updatePost = createAsyncThunk(
       { headers: { Authorization: getAccessToken() } },
     );
 
-    // REVIEW: Actions creators isn't the best place to perform side effects
-    // It is would be better to move side effects to middleware or somewhere else
     message.success('Post successfully updated!');
     history.push(`/post/${_id}`);
   },
@@ -95,15 +91,11 @@ export const deletePost = createAsyncThunk(
     } catch (e) {
       const errorMessage: string = 'Cannot delete post!';
 
-      // REVIEW: Actions creators isn't the best place to perform side effects
-      // It is would be better to move side effects to middleware or somewhere else
       message.error(errorMessage);
 
       throw new Error(errorMessage);
     }
 
-    // REVIEW: Actions creators isn't the best place to perform side effects
-    // It is would be better to move side effects to middleware or somewhere else
     message.success('Post successfully deleted!');
 
     return { id };

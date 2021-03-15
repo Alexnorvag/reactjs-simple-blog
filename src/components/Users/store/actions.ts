@@ -27,8 +27,6 @@ export const deleteUser = createAsyncThunk(
       { headers: { Authorization: getAccessToken() } },
     );
 
-    // REVIEW: Actions creators isn't the best place to perform side effects
-    // It is would be better to move side effects to middleware or somewhere else
     message.success('User successfully deleted');
 
     return { id };

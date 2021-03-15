@@ -23,8 +23,6 @@ const processAuthError = <C extends RequestStatusCode, S extends WithRequestStat
 ) => {
   const statusCode: number = getStatusCode(error);
 
-  // REVIEW: Actions creators isn't the best place to perform side effects
-  // It is would be better to move side effects to middleware or somewhere else
   if (([...errorsToBeHandled] as number[]).includes(statusCode)) {
     message.warn(getErrorMessage(error));
 
@@ -69,8 +67,6 @@ export const signIn = createAsyncThunk(
         },
       } = await axios.post(apiRoutes.signIn, authCredentials);
 
-      // REVIEW: Actions creators isn't the best place to perform side effects
-      // It is would be better to move side effects to middleware or somewhere else
       writeToLocalStorage({
         accessToken,
         refreshToken,
@@ -102,8 +98,6 @@ export const signOut = createAsyncThunk(
       { headers: { Authorization: getAccessToken() } },
     );
 
-    // REVIEW: Actions creators isn't the best place to perform side effects
-    // It is would be better to move side effects to middleware or somewhere else
     clearLocalStorage();
   },
 );
