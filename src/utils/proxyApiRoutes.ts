@@ -30,6 +30,7 @@ export default (routes: ApiRoutes, apiUrl: string) => {
         return value;
       }
 
+      // TODO: Investigate the cause of this
       // @ts-ignore
       if (route === '$$typeof') {
         return '';
